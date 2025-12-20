@@ -12,9 +12,13 @@ export const TerminalInstancePanel: React.FC<TerminalInstancePanelProps> = ({ in
   const terminalRef = useRef<TerminalMobileTerminalRef>(null);
   const [keyboardHeight] = useState(new Animated.Value(0));
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isTerminalConnected, setIsTerminalConnected] = useState(false);
 
   const handleKeyPress = useCallback((sequence: string) => {
-    terminalRef.current?.sendKeySequence(sequence);
+    // Check if terminal is connected before sending
+    if (terminalRef.current?.isConnected()) {
+      terminalRef.current?.sendKeySequence(sequence);
+    }
   }, []);
 
   const handleDismissKeyboard = useCallback(() => {
@@ -56,6 +60,18 @@ export const TerminalInstancePanel: React.FC<TerminalInstancePanelProps> = ({ in
     };
   }, [keyboardHeight]);
 
+  // Track terminal connection state
+  useEffect(() => {
+    const checkConnectionInterval = setInterval(() => {
+      const connected = terminalRef.current?.isConnected() ?? false;
+      setIsTerminalConnected(connected);
+    }, 500); // Check every 500ms
+
+    return () => {
+      clearInterval(checkConnectionInterval);
+    };
+  }, []);
+
   return (
     <Animated.View style={[styles.container, { marginBottom: keyboardHeight }]}>
       <View style={styles.terminalWrapper}>
@@ -65,6 +81,7 @@ export const TerminalInstancePanel: React.FC<TerminalInstancePanelProps> = ({ in
         onKeyPress={handleKeyPress}
         onDismissKeyboard={handleDismissKeyboard}
         keyboardVisible={keyboardVisible}
+        disabled={!isTerminalConnected}
       />
     </Animated.View>
   );

@@ -715,7 +715,11 @@ function buildTerminalHtml(): string {
           } else if (payload.type === 'reset') {
             resetTerminal();
           } else if (payload.type === 'keySequence') {
-            sendInput(payload.data);
+            try {
+              sendInput(payload.data);
+            } catch (err) {
+              console.log('Error sending key sequence:', err);
+            }
           } else if (payload.type === 'blur') {
             if (term && term.textarea) {
               term.textarea.blur();
@@ -756,6 +760,7 @@ interface TerminalMobileTerminalProps {
 export interface TerminalMobileTerminalRef {
   sendKeySequence: (sequence: string) => void;
   blurTerminal: () => void;
+  isConnected: () => boolean;
 }
 
 export const TerminalMobileTerminal = React.forwardRef<
@@ -766,13 +771,14 @@ export const TerminalMobileTerminal = React.forwardRef<
   const activeInstanceRef = useRef<string | null>(null);
   const isMountedRef = useRef(true);
   const [webViewReady, setWebViewReady] = useState(false);
-  const [, setStatus] = useState<TerminalStatus>('idle');
+  const [status, setStatus] = useState<TerminalStatus>('idle');
+  const [isConnected, setIsConnected] = useState(false);
 
   const relayConfig = useMemo(() => buildRelayConfig(), []);
   const terminalHtml = useMemo(() => buildTerminalHtml(), []);
 
   const sendKeySequence = useCallback((sequence: string) => {
-    if (!webViewReady) {
+    if (!webViewReady || !isConnected) {
       return;
     }
     try {
@@ -786,7 +792,7 @@ export const TerminalMobileTerminal = React.forwardRef<
         tags: { feature: 'mobile-terminal-keys' },
       });
     }
-  }, [instanceId, webViewReady]);
+  }, [instanceId, webViewReady, isConnected]);
 
   const blurTerminal = useCallback(() => {
     if (!webViewReady) {
@@ -805,10 +811,15 @@ export const TerminalMobileTerminal = React.forwardRef<
     }
   }, [instanceId, webViewReady]);
 
+  const checkIsConnected = useCallback(() => {
+    return isConnected;
+  }, [isConnected]);
+
   React.useImperativeHandle(ref, () => ({
     sendKeySequence,
     blurTerminal,
-  }), [sendKeySequence, blurTerminal]);
+    isConnected: checkIsConnected,
+  }), [sendKeySequence, blurTerminal, checkIsConnected]);
 
   useEffect(() => {
     return () => {
@@ -898,6 +909,8 @@ export const TerminalMobileTerminal = React.forwardRef<
         case 'status':
           if (payload.status) {
             setStatus(payload.status);
+            // Update connection state based on status
+            setIsConnected(payload.status === 'connected');
           }
           break;
         case 'error':
@@ -906,6 +919,8 @@ export const TerminalMobileTerminal = React.forwardRef<
           } else {
             setStatus('error');
           }
+          // Disconnected on error
+          setIsConnected(false);
           break;
         default:
           break;
