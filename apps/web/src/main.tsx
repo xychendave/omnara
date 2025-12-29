@@ -18,6 +18,9 @@ const withProviders = (node: React.ReactNode) => {
           debug: import.meta.env.MODE === 'development',
           persistence: 'localStorage',
           disable_session_recording: import.meta.env.MODE === 'development',
+          disable_toolbar: true,
+          opt_out_useragent_filter: false,
+          opt_out_capturing_by_default: false,
         }}
       >
         {node}
