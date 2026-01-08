@@ -56,11 +56,20 @@ class DashboardAPI {
     console.log('[DashboardAPI] Making request to:', url, 'priority:', retryOptions?.priority || 'normal');
     
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      const controller = new AbortController();
+      let controller: AbortController | null = null;
+      let timeoutId: NodeJS.Timeout | null = null;
       const timeoutMs = retryOptions?.priority === 'high' ? 15000 : 30000; // 15s for high priority, 30s default
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
       
       try {
+        // Create a new AbortController for this specific attempt
+        controller = new AbortController();
+        // Set timeout to abort after timeoutMs
+        timeoutId = setTimeout(() => {
+          if (controller) {
+            controller.abort();
+          }
+        }, timeoutMs);
+        
         const headers = await this.getAuthHeaders();
         console.log('[DashboardAPI] Request headers prepared for:', url);
         const response = await fetch(`${API_BASE_URL}${url}`, {
@@ -107,6 +116,11 @@ class DashboardAPI {
           });
           if (attempt < maxRetries) {
             console.warn(`[DashboardAPI] Retrying request (attempt ${attempt + 1}/${maxRetries + 1}): ${errorMessage}`);
+            // Clear timeout before sleeping to prevent race conditions
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+              timeoutId = null;
+            }
             const delay = Math.min(
               RETRY_CONFIG.initialDelay * Math.pow(RETRY_CONFIG.backoffFactor, attempt),
               RETRY_CONFIG.maxDelay
@@ -135,12 +149,10 @@ class DashboardAPI {
           throw new APIError(finalErrorMessage, finalErrorTitle);
         }
 
-        clearTimeout(timeoutId);
         const data = await response.json();
         console.log('[DashboardAPI] Request successful:', url, 'data keys:', Object.keys(data));
         return data;
       } catch (error) {
-        clearTimeout(timeoutId);
         reportError(error, {
           context: 'Network error during API request',
           extras: { url, attempt: attempt + 1 },
@@ -161,6 +173,12 @@ class DashboardAPI {
           throw error;
         }
 
+        // Clear timeout before sleeping to prevent race conditions
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+        
         // Calculate delay for exponential backoff
         const delay = Math.min(
           RETRY_CONFIG.initialDelay * Math.pow(RETRY_CONFIG.backoffFactor, attempt),
@@ -169,6 +187,14 @@ class DashboardAPI {
         
         console.warn(`[DashboardAPI] Retrying after error (attempt ${attempt + 1}/${maxRetries + 1}): ${error instanceof Error ? error.message : 'Unknown error'}`);
         await this.sleep(delay);
+      } finally {
+        // Always clear the timeout to prevent it from firing after the request completes or fails
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+        // Nullify the controller to ensure it's not reused
+        controller = null;
       }
     }
   }
