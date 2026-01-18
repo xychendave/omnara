@@ -461,3 +461,77 @@ def update_agent_instance_endpoint(
         raise HTTPException(status_code=404, detail="Agent instance not found")
 
     return result
+
+
+# ============================================================================
+# User Sessions Endpoints (Mobile App Compatibility)
+# ============================================================================
+# These endpoints provide mobile app compatibility by aliasing agent-instances
+# endpoints under the /user-sessions path. The mobile app expects these routes.
+
+
+@router.get("/user-sessions", response_model=list[AgentInstanceResponse])
+def list_user_sessions(
+    machine_id: str | None = None,
+    limit: int | None = None,
+    scope: AgentInstanceScope = AgentInstanceScope.ME,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get user sessions (agent instances) visible to the current user.
+    This endpoint is used by the mobile app and is an alias for /agent-instances.
+    
+    Args:
+        machine_id: Optional filter by machine ID (stored in instance_metadata)
+        limit: Optional maximum number of sessions to return
+        scope: Visibility scope (me, shared, all)
+    """
+    # Get all agent instances for the user
+    instances = get_all_agent_instances(
+        db, current_user.id, limit=limit, scope=scope.value
+    )
+    
+    # If machine_id filter is provided, filter instances by metadata
+    if machine_id:
+        filtered_instances = []
+        for instance in instances:
+            # Check if instance has metadata with matching machine_id
+            if (
+                instance.instance_metadata
+                and isinstance(instance.instance_metadata, dict)
+                and instance.instance_metadata.get("machine_id") == machine_id
+            ):
+                filtered_instances.append(instance)
+        return filtered_instances
+    
+    return instances
+
+
+@router.get("/user-sessions/{session_id}", response_model=AgentInstanceDetail)
+def get_user_session_detail(
+    session_id: UUID,
+    message_limit: int = 50,
+    before_message_id: UUID | None = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get detailed information about a specific user session (agent instance).
+    This endpoint is used by the mobile app and is an alias for /agent-instances/{id}.
+    
+    Args:
+        session_id: The session (agent instance) ID
+        message_limit: Maximum number of messages to return
+        before_message_id: Optional cursor for pagination
+    """
+    result = get_agent_instance_detail(
+        db,
+        session_id,
+        current_user.id,
+        message_limit=message_limit,
+        before_message_id=before_message_id,
+    )
+    if not result:
+        raise HTTPException(status_code=404, detail="User session not found")
+    return result
