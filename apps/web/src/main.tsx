@@ -4,6 +4,12 @@ import App from './App.tsx'
 import './index.css'
 import './integrations/sentry'
 import { PostHogProvider } from 'posthog-js/react'
+import { setupChunkErrorHandler } from './utils/chunkErrorHandler'
+import { initializeVersionCheck } from './utils/versionCheck'
+
+// Initialize chunk error handling and version checking
+setupChunkErrorHandler()
+initializeVersionCheck()
 
 const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY as string | undefined
 const POSTHOG_HOST = (import.meta.env.VITE_POSTHOG_HOST as string | undefined) || 'https://us.i.posthog.com'

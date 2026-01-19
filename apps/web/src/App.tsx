@@ -24,6 +24,7 @@ import {
   InstanceList,
   APIKeyManagement
 } from "./components/LazyLoader";
+import { LazyLoadErrorBoundary } from "./components/LazyLoadErrorBoundary";
 import CLIAuth from "./pages/CLIAuth";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+        <LazyLoadErrorBoundary>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/pricing" element={<LazyRoute component={Pricing} />} />
@@ -68,6 +70,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </LazyLoadErrorBoundary>
         </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

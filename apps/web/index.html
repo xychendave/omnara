@@ -137,13 +137,15 @@
 
       gtag('config', 'G-9Y31BL7XE6');
     </script>
-
-    <!-- Preload module entry correctly (or remove entirely in dev) -->
-    <link rel="modulepreload" href="/src/main.tsx" crossorigin>
     
     <!-- Resource hints for performance -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="format-detection" content="telephone=no">
+    
+    <!-- Cache control to prevent Safari caching issues -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
   </head>
   <body>
     <div id="root"></div>

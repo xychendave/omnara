@@ -49,6 +49,11 @@ export default defineConfig(({ mode }) => ({
           'chart-vendor': ['recharts'],
           'date-vendor': ['date-fns'],
         },
+        // Add hash to filenames for cache busting
+        // This ensures that when chunks change, the filename changes too
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
     // Optimize chunk size
