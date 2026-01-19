@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
+import { ChunkLoadErrorBoundary } from './ChunkLoadErrorBoundary';
 
 // Loading component
 export function PageLoader() {
@@ -33,11 +34,13 @@ export const APIKeyManagement = lazy(() =>
   }))
 );
 
-// Wrapper component for lazy loaded routes
+// Wrapper component for lazy loaded routes with error boundary
 export function LazyRoute({ component: Component }: { component: React.ComponentType }) {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Component />
-    </Suspense>
+    <ChunkLoadErrorBoundary>
+      <Suspense fallback={<PageLoader />}>
+        <Component />
+      </Suspense>
+    </ChunkLoadErrorBoundary>
   );
 }

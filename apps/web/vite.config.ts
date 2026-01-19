@@ -12,6 +12,10 @@ export default defineConfig(({ mode }) => ({
     headers: {
       'X-Frame-Options': 'DENY',
       'Content-Security-Policy': "frame-ancestors 'none'",
+      // Add cache-busting headers to prevent stale cached chunks
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
     },
     fs: {
       // allow serving files from the shared package during dev
