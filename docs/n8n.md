@@ -1,17 +1,17 @@
-# n8n Integration Architecture
+# n8n 集成架构
 
-## Overview
+## 概述
 
-The Omnara n8n integration (`n8n-nodes-omnara`) is a community node package that enables workflows to communicate with users in real-time through the Omnara platform. It allows n8n workflows to send status updates, ask questions, and wait for user responses via web, mobile, email, and SMS.
+Omnara 的 n8n 集成（`n8n-nodes-omnara`）是一个社区节点包，使工作流能够通过 Omnara 平台与用户进行实时通信。它允许 n8n 工作流发送状态更新、提出问题，并通过网页、移动端、邮件和短信等待用户响应。
 
-**Key Capabilities:**
-- **Non-blocking messages**: Send status updates while workflows continue
-- **Blocking questions**: Pause workflows until users respond
-- **AI Agent compatibility**: Usable as a tool in n8n AI Agents
-- **Multi-channel notifications**: Email, SMS, and push notifications
-- **Session management**: Track and end agent sessions
+**核心能力：**
+- **非阻塞消息**：在工作流继续运行的同时发送状态更新
+- **阻塞式提问**：暂停工作流直到用户响应
+- **AI Agent 兼容**：可作为 n8n AI Agent 的工具使用
+- **多渠道通知**：邮件、短信和推送通知
+- **会话管理**：跟踪并结束 agent 会话
 
-## Architecture
+## 架构
 
 ```
 ┌─────────────┐         ┌──────────────────┐         ┌─────────────┐
@@ -30,42 +30,42 @@ The Omnara n8n integration (`n8n-nodes-omnara`) is a community node package that
 └─────────────┘         └──────────────────┘         └─────────────┘
 ```
 
-## Package Structure
+## 包结构
 
 ```
 src/integrations/n8n/
 ├── src/
 │   ├── credentials/
-│   │   └── OmnaraApi.credentials.ts      # API key authentication
+│   │   └── OmnaraApi.credentials.ts      # API key 认证
 │   ├── nodes/
 │   │   └── Omnara/
-│   │       ├── Omnara.node.ts            # Main node implementation
-│   │       ├── Omnara.node.json          # Node metadata
-│   │       ├── omnara.png                # Node icon
+│   │       ├── Omnara.node.ts            # 主节点实现
+│   │       ├── Omnara.node.json          # 节点元数据
+│   │       ├── omnara.png                # 节点图标
 │   │       └── actions/
 │   │           ├── message/
-│   │           │   ├── index.ts          # Operation descriptions
-│   │           │   ├── send.operation.ts # Non-blocking send
-│   │           │   └── sendAndWait.operation.ts # Blocking send
+│   │           │   ├── index.ts          # 操作描述
+│   │           │   ├── send.operation.ts # 非阻塞发送
+│   │           │   └── sendAndWait.operation.ts # 阻塞发送
 │   │           └── session/
 │   │               ├── index.ts
-│   │               └── end.operation.ts  # End session
+│   │               └── end.operation.ts  # 结束会话
 │   └── utils/
-│       ├── GenericFunctions.ts           # API request helpers
-│       ├── sendAndWaitWebhook.ts         # Webhook handler
+│       ├── GenericFunctions.ts           # API 请求辅助函数
+│       ├── sendAndWaitWebhook.ts         # webhook 处理器
 │       └── sendAndWait/
-│           ├── descriptions.ts           # Webhook config
-│           └── configureWaitTillDate.ts  # Timeout config
+│           ├── descriptions.ts           # webhook 配置
+│           └── configureWaitTillDate.ts  # 超时配置
 ├── package.json
 ├── tsconfig.json
 └── README.md
 ```
 
-## Authentication
+## 认证
 
-### Credential Setup (`OmnaraApi.credentials.ts`)
+### 凭证设置（`OmnaraApi.credentials.ts`）
 
-The n8n node uses **Bearer token authentication** with Omnara's agent API:
+该 n8n 节点使用 **Bearer token 认证**访问 Omnara 的 agent API：
 
 ```typescript
 authenticate: IAuthenticateGeneric = {
@@ -78,27 +78,27 @@ authenticate: IAuthenticateGeneric = {
 }
 ```
 
-**Configuration:**
-- **API Key**: User's Omnara API key (obtained from dashboard)
-- **Server URL**: Defaults to `https://agent.omnara.com` (customizable for self-hosted)
-- **Credential Test**: Validates by calling `/api/v1/auth/verify`
+**配置：**
+- **API Key**：用户的 Omnara API key（从仪表盘获取）
+- **服务器 URL**：默认为 `https://agent.omnara.com`（自托管时可自定义）
+- **凭证测试**：通过调用 `/api/v1/auth/verify` 进行验证
 
-**How It Works:**
-1. User creates API key in Omnara dashboard
-2. API key is stored in n8n's credential system
-3. Every API request includes `Authorization: Bearer <api_key>` header
-4. Omnara server validates JWT and extracts user_id
-5. All operations are scoped to authenticated user
+**工作原理：**
+1. 用户在 Omnara 仪表盘中创建 API key
+2. API key 存储在 n8n 的凭证系统中
+3. 每个 API 请求都包含 `Authorization: Bearer <api_key>` 请求头
+4. Omnara 服务器验证 JWT 并提取 user_id
+5. 所有操作的范围都限定为已认证用户
 
-## Core Operations
+## 核心操作
 
-### 1. Send Message (Non-blocking)
+### 1. 发送消息（非阻塞）
 
-**Purpose**: Send informational messages without waiting for response
+**目的**：发送信息性消息而无需等待响应
 
-**Implementation**: `src/nodes/Omnara/actions/message/send.operation.ts:100`
+**实现**：`src/nodes/Omnara/actions/message/send.operation.ts:100`
 
-**API Call:**
+**API 调用：**
 ```
 POST /api/v1/messages/agent
 {
@@ -112,33 +112,33 @@ POST /api/v1/messages/agent
 }
 ```
 
-**Flow:**
-1. n8n node receives message to send
-2. Makes POST request to Omnara agent server
-3. Server creates/updates agent instance
-4. Stores message in database with `sender_type=AGENT`
-5. Sends notifications based on user preferences
-6. Returns immediately with message_id
-7. Workflow continues without waiting
+**流程：**
+1. n8n 节点接收要发送的消息
+2. 向 Omnara agent 服务器发起 POST 请求
+3. 服务器创建/更新 agent 实例
+4. 将消息以 `sender_type=AGENT` 存入数据库
+5. 根据用户偏好发送通知
+6. 立即返回 message_id
+7. 工作流继续运行，无需等待
 
-**Response includes:**
-- `message_id`: ID of created message
-- `agent_instance_id`: Instance ID (created if new)
-- `queued_user_messages`: Any pending user responses (see Queued Messages below)
+**响应包含：**
+- `message_id`：所创建消息的 ID
+- `agent_instance_id`：实例 ID（若是新实例则会创建）
+- `queued_user_messages`：任何待处理的用户响应（参见下文的排队消息）
 
-### 2. Send and Wait (Blocking)
+### 2. 发送并等待（阻塞）
 
-**Purpose**: Ask questions and pause until user responds
+**目的**：提出问题并暂停，直到用户响应
 
-**Implementation**: `src/nodes/Omnara/Omnara.node.ts:81`
+**实现**：`src/nodes/Omnara/Omnara.node.ts:81`
 
-**Two Modes:**
+**两种模式：**
 
-#### Mode A: Webhook Mode (Async) - Default for workflows
+#### 模式 A：Webhook 模式（异步）——工作流的默认模式
 
-**How It Works:**
-1. n8n generates unique webhook URL: `{resumeUrl}/{nodeId}`
-2. Sends message with webhook URL in metadata:
+**工作原理：**
+1. n8n 生成唯一的 webhook URL：`{resumeUrl}/{nodeId}`
+2. 在元数据中携带 webhook URL 发送消息：
 ```json
 {
   "agent_instance_id": "uuid",
@@ -152,13 +152,13 @@ POST /api/v1/messages/agent
   }
 }
 ```
-3. Calls `putExecutionToWait()` - workflow pauses
-4. User responds in Omnara dashboard
-5. Omnara triggers webhook callback (`src/servers/shared/db/queries.py:490`)
-6. n8n receives webhook POST and resumes workflow
-7. Response data flows to next node
+3. 调用 `putExecutionToWait()`——工作流暂停
+4. 用户在 Omnara 仪表盘中响应
+5. Omnara 触发 webhook 回调（`src/servers/shared/db/queries.py:490`）
+6. n8n 接收到 webhook POST 并恢复工作流
+7. 响应数据流向下一个节点
 
-**Webhook Callback** (`src/utils/sendAndWaitWebhook.ts:12`):
+**Webhook 回调**（`src/utils/sendAndWaitWebhook.ts:12`）：
 ```typescript
 export async function omnaraSendAndWaitWebhook(this: IWebhookFunctions) {
   const body = this.getBodyData();
@@ -178,7 +178,7 @@ export async function omnaraSendAndWaitWebhook(this: IWebhookFunctions) {
 }
 ```
 
-**Omnara Server Webhook Trigger** (`src/servers/shared/db/queries.py:490`):
+**Omnara 服务器 webhook 触发**（`src/servers/shared/db/queries.py:490`）：
 ```python
 def trigger_webhook_for_user_response(
     db: Session,
@@ -187,13 +187,13 @@ def trigger_webhook_for_user_response(
     user_message_id: str,
     user_id: str
 ):
-    # Get last agent message with requires_user_input=True
+    # 获取最后一条 requires_user_input=True 的 agent 消息
     last_agent_message = get_last_agent_message_waiting_for_input(...)
 
-    # Extract webhook URL from message metadata
+    # 从消息元数据中提取 webhook URL
     webhook_url = last_agent_message.message_metadata.get("webhook_url")
 
-    # Trigger webhook with user's response
+    # 携带用户响应触发 webhook
     response = httpx.post(webhook_url, json={
         "user_message": user_message_content,
         "user_id": user_id,
@@ -202,36 +202,36 @@ def trigger_webhook_for_user_response(
         "timestamp": datetime.now().isoformat()
     })
 
-    # Mark as triggered to prevent duplicates
+    # 标记为已触发以防止重复
     last_agent_message.message_metadata["webhook_triggered"] = True
 ```
 
-#### Mode B: Sync Mode (Polling) - For AI Agents
+#### 模式 B：同步模式（轮询）——用于 AI Agent
 
-**Why Needed**: AI Agents in n8n don't support async `putExecutionToWait()` properly
+**为什么需要**：n8n 中的 AI Agent 无法正确支持异步的 `putExecutionToWait()`
 
-**How It Works** (`src/nodes/Omnara/Omnara.node.ts:91`):
-1. Sends message with `sync_mode: true` in metadata
-2. NO webhook URL sent
-3. Polls `/api/v1/messages/pending` every 5 seconds
-4. Checks for user responses using `last_read_message_id`
-5. Returns when response found or timeout reached
-6. Synchronous execution - works in AI Agent context
+**工作原理**（`src/nodes/Omnara/Omnara.node.ts:91`）：
+1. 在元数据中携带 `sync_mode: true` 发送消息
+2. 不发送 webhook URL
+3. 每 5 秒轮询一次 `/api/v1/messages/pending`
+4. 使用 `last_read_message_id` 检查用户响应
+5. 找到响应或达到超时后返回
+6. 同步执行——可在 AI Agent 上下文中工作
 
-**Polling Loop:**
+**轮询循环：**
 ```typescript
-const syncTimeout = options.syncTimeout || 7200; // 2 hours
-const pollInterval = options.pollInterval || 5; // 5 seconds
+const syncTimeout = options.syncTimeout || 7200; // 2 小时
+const pollInterval = options.pollInterval || 5; // 5 秒
 const startTime = Date.now();
 
 while (Date.now() - startTime < syncTimeout * 1000) {
-  // Busy-wait for poll interval
+  // 忙等待轮询间隔
   const pollStart = Date.now();
   while (Date.now() - pollStart < pollInterval * 1000) {
     await new Promise(resolve => resolve(undefined));
   }
 
-  // Check for pending messages
+  // 检查待处理消息
   const pending = await GET('/messages/pending', {
     agent_instance_id: agentInstanceId,
     last_read_message_id: lastReadMessageId
@@ -242,26 +242,26 @@ while (Date.now() - startTime < syncTimeout * 1000) {
   }
 }
 
-// Timeout
+// 超时
 return { success: false, error: 'Timeout' };
 ```
 
-**Key Differences:**
-| Feature | Webhook Mode | Sync Mode |
+**关键区别：**
+| 特性 | Webhook 模式 | 同步模式 |
 |---------|--------------|-----------|
-| **Async/Await** | Yes | No (synchronous) |
-| **Resource Usage** | Low (event-driven) | Higher (polling) |
-| **AI Agent Compatible** | No | Yes |
-| **Max Wait Time** | 7 days | 48 hours |
-| **Use Case** | Regular workflows | AI Agent tools |
+| **异步/等待** | 是 | 否（同步） |
+| **资源占用** | 低（事件驱动） | 较高（轮询） |
+| **AI Agent 兼容** | 否 | 是 |
+| **最长等待时间** | 7 天 | 48 小时 |
+| **使用场景** | 常规工作流 | AI Agent 工具 |
 
-### 3. End Session
+### 3. 结束会话
 
-**Purpose**: Mark agent instance as completed
+**目的**：将 agent 实例标记为已完成
 
-**Implementation**: `src/nodes/Omnara/actions/session/end.operation.ts:28`
+**实现**：`src/nodes/Omnara/actions/session/end.operation.ts:28`
 
-**API Call:**
+**API 调用：**
 ```
 POST /api/v1/sessions/end
 {
@@ -269,36 +269,36 @@ POST /api/v1/sessions/end
 }
 ```
 
-**What Happens:**
-1. Sets `status = COMPLETED` on agent instance
-2. Timestamps `ended_at`
-3. Stops tracking as active session
-4. Instance remains in history
+**发生的事情：**
+1. 将 agent 实例的 `status = COMPLETED`
+2. 为 `ended_at` 打上时间戳
+3. 停止将其作为活跃会话跟踪
+4. 实例保留在历史记录中
 
-## Agent Instance Management
+## Agent 实例管理
 
-### Creating Instances
+### 创建实例
 
-**Two Patterns:**
+**两种模式：**
 
-#### Pattern 1: Webhook-triggered (Recommended)
+#### 模式 1：webhook 触发（推荐）
 ```
-1. User triggers workflow from Omnara dashboard
-2. Webhook sends:
-   - agent_instance_id: pre-generated UUID
-   - agent_type: from dashboard
-   - prompt: user's message
-3. All n8n nodes use same instance_id from webhook
-```
-
-#### Pattern 2: Self-generated
-```
-1. Workflow generates UUID: {{ $uuid() }}
-2. Stores in Set node variables
-3. All n8n nodes reference same variables
+1. 用户从 Omnara 仪表盘触发工作流
+2. webhook 发送：
+   - agent_instance_id: 预先生成的 UUID
+   - agent_type: 来自仪表盘
+   - prompt: 用户的消息
+3. 所有 n8n 节点使用来自 webhook 的同一 instance_id
 ```
 
-### Instance Lifecycle
+#### 模式 2：自行生成
+```
+1. 工作流生成 UUID：{{ $uuid() }}
+2. 存储在 Set 节点变量中
+3. 所有 n8n 节点引用相同的变量
+```
+
+### 实例生命周期
 
 ```
 CREATE (first message) → ACTIVE → COMPLETED (end session)
@@ -306,7 +306,7 @@ CREATE (first message) → ACTIVE → COMPLETED (end session)
                       Messages exchanged
 ```
 
-**Database Operations** (`src/servers/shared/db/queries.py:70`):
+**数据库操作**（`src/servers/shared/db/queries.py:70`）：
 ```python
 def get_or_create_agent_instance(
     db: Session,
@@ -314,21 +314,21 @@ def get_or_create_agent_instance(
     user_id: str,
     agent_type: str | None
 ) -> AgentInstance:
-    # Try to get existing
+    # 尝试获取已有实例
     instance = db.query(AgentInstance).filter(
         AgentInstance.id == agent_instance_id
     ).first()
 
     if instance:
-        # Validate user owns this instance
+        # 验证用户拥有该实例
         if str(instance.user_id) != user_id:
             raise ValueError("Access denied")
         return instance
     else:
-        # Create new with provided ID
+        # 使用提供的 ID 创建新实例
         user_agent = create_or_get_user_agent(db, agent_type, user_id)
         instance = AgentInstance(
-            id=agent_instance_id,  # Use provided ID
+            id=agent_instance_id,  # 使用提供的 ID
             user_agent_id=user_agent.id,
             user_id=user_id,
             status=AgentStatus.ACTIVE
@@ -337,24 +337,24 @@ def get_or_create_agent_instance(
         return instance
 ```
 
-## Message System Integration
+## 消息系统集成
 
-### Unified Messaging
+### 统一消息系统
 
-All messages stored in single `messages` table with:
-- `sender_type`: AGENT or USER
-- `requires_user_input`: True for questions, False for updates
-- `message_metadata`: JSON field for webhook URLs, node IDs, etc.
+所有消息存储在单一的 `messages` 表中，包含：
+- `sender_type`：AGENT 或 USER
+- `requires_user_input`：提问时为 True，状态更新时为 False
+- `message_metadata`：用于存储 webhook URL、节点 ID 等的 JSON 字段
 
-### Queued Messages Feature
+### 排队消息功能
 
-**Problem**: User might respond BEFORE agent's next message
-**Solution**: Return queued user messages with every agent message
+**问题**：用户可能在 agent 的下一条消息之前就已响应
+**解决方案**：随每条 agent 消息返回排队中的用户消息
 
-**Flow** (`src/servers/shared/db/queries.py:170`):
+**流程**（`src/servers/shared/db/queries.py:170`）：
 ```python
 def create_agent_message(...):
-    # Create message
+    # 创建消息
     message = Message(
         agent_instance_id=instance.id,
         content=content,
@@ -364,7 +364,7 @@ def create_agent_message(...):
     )
     db.add(message)
 
-    # Get any user messages since last read
+    # 获取自上次读取以来的所有用户消息
     queued_messages = get_unread_user_messages(
         db=db,
         agent_instance_id=instance.id,
@@ -373,11 +373,11 @@ def create_agent_message(...):
 
     return {
         "message_id": message.id,
-        "queued_user_messages": queued_messages  # User responses since last check
+        "queued_user_messages": queued_messages  # 自上次检查以来的用户响应
     }
 ```
 
-**In n8n** (`src/nodes/Omnara/actions/message/send.operation.ts:138`):
+**在 n8n 中**（`src/nodes/Omnara/actions/message/send.operation.ts:138`）：
 ```typescript
 const response = await omnaraApiRequest.call(this, 'POST', '/messages/agent', body);
 
@@ -390,14 +390,14 @@ return [{
 }];
 ```
 
-**Why This Matters:**
-- Agents can check for responses on EVERY message send
-- No messages missed between send and wait operations
-- User responses always delivered, even if timing is off
+**为什么这很重要：**
+- agent 可以在每次发送消息时检查响应
+- 在发送和等待操作之间不会遗漏任何消息
+- 即使时机不对，用户响应也总能送达
 
-## API Communication
+## API 通信
 
-### Helper Functions (`src/utils/GenericFunctions.ts`)
+### 辅助函数（`src/utils/GenericFunctions.ts`）
 
 ```typescript
 export async function omnaraApiRequest(
@@ -419,49 +419,49 @@ export async function omnaraApiRequest(
 
   return await this.helpers.httpRequestWithAuthentication.call(
     this,
-    'omnaraApi',  // Credential name
+    'omnaraApi',  // 凭证名称
     options
   );
 }
 ```
 
-**All API calls:**
-- Use authenticated helper (auto-adds Bearer token)
-- Target `/api/v1/*` endpoints
-- Return JSON responses
-- Throw `NodeApiError` on failure
+**所有 API 调用：**
+- 使用带认证的辅助函数（自动添加 Bearer token）
+- 目标为 `/api/v1/*` 端点
+- 返回 JSON 响应
+- 失败时抛出 `NodeApiError`
 
-### API Endpoints Used
+### 使用的 API 端点
 
-| Endpoint | Method | Purpose |
+| Endpoint | Method | 用途 |
 |----------|--------|---------|
-| `/api/v1/messages/agent` | POST | Send agent message (both send & sendAndWait) |
-| `/api/v1/messages/pending` | GET | Poll for user responses (sync mode) |
-| `/api/v1/sessions/end` | POST | End agent session |
-| `/api/v1/auth/verify` | GET | Validate credentials |
+| `/api/v1/messages/agent` | POST | 发送 agent 消息（send 与 sendAndWait 均使用） |
+| `/api/v1/messages/pending` | GET | 轮询用户响应（同步模式） |
+| `/api/v1/sessions/end` | POST | 结束 agent 会话 |
+| `/api/v1/auth/verify` | GET | 验证凭证 |
 
-## AI Agent Tool Integration
+## AI Agent 工具集成
 
-### Configuration
+### 配置
 
 ```typescript
 export class Omnara implements INodeType {
   description: INodeTypeDescription = {
-    // ... other config
-    usableAsTool: true,  // Enable AI Agent usage
+    // ... 其他配置
+    usableAsTool: true,  // 启用 AI Agent 使用
   };
 }
 ```
 
-**What This Enables:**
-- AI Agents can call Omnara node as a function
-- Agent describes when to use: "ask user for input" or "update user"
-- Parameters passed as function arguments
+**这启用了什么：**
+- AI Agent 可以将 Omnara 节点作为函数调用
+- Agent 描述何时使用：“向用户询问输入”或“向用户发送更新”
+- 参数以函数实参的形式传递
 
-### Usage Pattern
+### 使用模式
 
 ```javascript
-// AI Agent decides to ask user
+// AI Agent 决定向用户提问
 await tools.omnara({
   resource: "message",
   operation: "sendAndWait",
@@ -469,40 +469,40 @@ await tools.omnara({
   agentType: "claude_code",
   message: "Should I proceed with this change?",
   options: {
-    syncMode: true,  // REQUIRED for AI Agents
+    syncMode: true,  // AI Agent 必须设置
     syncTimeout: 600,
     pollInterval: 5,
     sendEmail: true
   }
 });
-// Returns user's response synchronously
+// 同步返回用户的响应
 ```
 
-**Critical**: MUST use `syncMode: true` because AI Agents run synchronously and can't handle async `putExecutionToWait()`.
+**关键**：必须使用 `syncMode: true`，因为 AI Agent 是同步运行的，无法处理异步的 `putExecutionToWait()`。
 
-## Notification System
+## 通知系统
 
-### Notification Preferences
+### 通知偏好
 
-**Priority (high to low):**
-1. **Message-level override**: `send_email`, `send_sms`, `send_push` in request
-2. **User preferences**: Stored in database per user
-3. **Default behavior**: No notifications unless specified
+**优先级（从高到低）：**
+1. **消息级覆盖**：请求中的 `send_email`、`send_sms`、`send_push`
+2. **用户偏好**：按用户存储在数据库中
+3. **默认行为**：除非指定，否则不发送通知
 
-### When Notifications Sent
+### 何时发送通知
 
-**Triggers:**
-- New agent message (status update or question)
-- `requires_user_input=true` → More urgent notification
+**触发条件：**
+- 新的 agent 消息（状态更新或提问）
+- `requires_user_input=true` → 更紧急的通知
 
-**Channels:**
-- **Email**: Always available, zero setup
-- **SMS**: Available with phone verification
-- **Push**: Available via mobile app or web push
+**渠道：**
+- **邮件**：始终可用，零配置
+- **短信**：完成手机号验证后可用
+- **推送**：通过移动应用或网页推送可用
 
-**Implementation** (handled by Omnara backend, not n8n):
+**实现**（由 Omnara 后端处理，而非 n8n）：
 ```python
-# In create_agent_message()
+# 在 create_agent_message() 中
 send_notifications(
     user_id=instance.user_id,
     agent_name=user_agent.name,
@@ -514,9 +514,9 @@ send_notifications(
 )
 ```
 
-## Error Handling
+## 错误处理
 
-### Credential Errors
+### 凭证错误
 
 ```typescript
 if (!credentials) {
@@ -526,7 +526,7 @@ if (!credentials) {
 }
 ```
 
-### Operation Errors
+### 操作错误
 
 ```typescript
 try {
@@ -541,7 +541,7 @@ try {
 }
 ```
 
-### Continue On Fail
+### 失败时继续
 
 ```typescript
 } catch (error) {
@@ -561,17 +561,17 @@ try {
 }
 ```
 
-## Development Workflow
+## 开发工作流
 
-### Building the Package
+### 构建包
 
 ```bash
-npm install          # Install dependencies
-npm run build        # Compile TypeScript → dist/
-npm run copy-assets  # Copy .png and .json files
+npm install          # 安装依赖
+npm run build        # 编译 TypeScript → dist/
+npm run copy-assets  # 复制 .png 和 .json 文件
 ```
 
-**Build Output:**
+**构建输出：**
 ```
 dist/
 ├── credentials/
@@ -585,29 +585,29 @@ dist/
     └── GenericFunctions.js
 ```
 
-### Publishing to npm
+### 发布到 npm
 
 ```bash
-npm run prepublishOnly  # Runs build automatically
-npm publish            # Publish to npm registry
+npm run prepublishOnly  # 自动运行构建
+npm publish            # 发布到 npm 仓库
 ```
 
-**Package Name**: `n8n-nodes-omnara`
-**Registry**: https://www.npmjs.com/package/n8n-nodes-omnara
+**包名**：`n8n-nodes-omnara`
+**仓库地址**：https://www.npmjs.com/package/n8n-nodes-omnara
 
-### Testing Locally
+### 本地测试
 
 ```bash
-# In n8n-nodes-omnara directory
+# 在 n8n-nodes-omnara 目录下
 npm link
 
-# In n8n installation directory
+# 在 n8n 安装目录下
 npm link n8n-nodes-omnara
 ```
 
-## Integration Points with Omnara Platform
+## 与 Omnara 平台的集成点
 
-### Backend API (`src/servers/api/routers.py`)
+### 后端 API（`src/servers/api/routers.py`）
 
 ```python
 @router.post("/messages/agent")
@@ -615,12 +615,12 @@ async def create_message(
     request: CreateMessageRequest,
     user_id: str = Depends(verify_api_key_dependency)
 ):
-    # Validate and create agent instance
+    # 验证并创建 agent 实例
     instance = get_or_create_agent_instance(
         db, request.agent_instance_id, user_id, request.agent_type
     )
 
-    # Create message in database
+    # 在数据库中创建消息
     result = create_agent_message(
         db=db,
         agent_instance_id=instance.id,
@@ -633,12 +633,12 @@ async def create_message(
         git_diff=request.git_diff
     )
 
-    # Send notifications
-    # Return queued user messages
+    # 发送通知
+    # 返回排队中的用户消息
     return result
 ```
 
-### Database Models (`src/shared/models/`)
+### 数据库模型（`src/shared/models/`）
 
 ```python
 class Message(Base):
@@ -647,9 +647,9 @@ class Message(Base):
     id = Column(UUID, primary_key=True)
     agent_instance_id = Column(UUID, ForeignKey("agent_instances.id"))
     content = Column(Text, nullable=False)
-    sender_type = Column(Enum(SenderType))  # AGENT or USER
+    sender_type = Column(Enum(SenderType))  # AGENT 或 USER
     requires_user_input = Column(Boolean, default=False)
-    message_metadata = Column(JSON)  # Stores webhook URLs
+    message_metadata = Column(JSON)  # 存储 webhook URL
     created_at = Column(DateTime(timezone=True))
 
 class AgentInstance(Base):
@@ -658,40 +658,40 @@ class AgentInstance(Base):
     id = Column(UUID, primary_key=True)
     user_agent_id = Column(UUID, ForeignKey("user_agents.id"))
     user_id = Column(UUID, ForeignKey("users.id"))
-    status = Column(Enum(AgentStatus))  # ACTIVE, COMPLETED, STALE
-    last_read_message_id = Column(UUID)  # For queued messages
-    git_diff = Column(Text)  # Optional git context
+    status = Column(Enum(AgentStatus))  # ACTIVE、COMPLETED、STALE
+    last_read_message_id = Column(UUID)  # 用于排队消息
+    git_diff = Column(Text)  # 可选的 git 上下文
     ended_at = Column(DateTime(timezone=True))
 ```
 
-### Web Dashboard (`apps/web/`)
+### 网页仪表盘（`apps/web/`）
 
-**User Interface:**
-- Real-time message display (WebSocket or polling)
-- Text input for responding to agent questions
-- Notification preferences management
-- Session history and filtering
+**用户界面：**
+- 实时消息显示（WebSocket 或轮询）
+- 用于回应 agent 提问的文本输入框
+- 通知偏好管理
+- 会话历史与筛选
 
-**Response Flow:**
+**响应流程：**
 ```
-User types response → POST /messages/user →
-Trigger webhook (if n8n waiting) →
-Update UI with confirmation
+用户输入响应 → POST /messages/user →
+触发 webhook（如果 n8n 正在等待）→
+更新 UI 并显示确认
 ```
 
-## Configuration Examples
+## 配置示例
 
-### Example 1: Simple Status Updates
+### 示例 1：简单的状态更新
 
 ```javascript
-// n8n workflow
+// n8n 工作流
 {
   "nodes": [
     {
       "name": "Build Project",
       "type": "n8n-nodes-base.code",
       "parameters": {
-        "code": "// build logic"
+        "code": "// 构建逻辑"
       }
     },
     {
@@ -712,7 +712,7 @@ Update UI with confirmation
 }
 ```
 
-### Example 2: Approval Workflow
+### 示例 2：审批工作流
 
 ```javascript
 {
@@ -721,7 +721,7 @@ Update UI with confirmation
       "name": "Prepare Deployment",
       "type": "n8n-nodes-base.code",
       "parameters": {
-        "code": "// deployment prep"
+        "code": "// 部署准备"
       }
     },
     {
@@ -747,14 +747,14 @@ Update UI with confirmation
       "name": "Deploy",
       "type": "n8n-nodes-base.code",
       "parameters": {
-        "code": "// deploy only if approved"
+        "code": "// 仅在获批后部署"
       }
     }
   ]
 }
 ```
 
-### Example 3: AI Agent with Sync Mode
+### 示例 3：使用同步模式的 AI Agent
 
 ```javascript
 {
@@ -777,9 +777,9 @@ Update UI with confirmation
         "agentType": "AI Assistant",
         "message": "{{ $json.question }}",
         "options": {
-          "syncMode": true,      // REQUIRED for AI Agents
-          "syncTimeout": 600,    // 10 minute timeout
-          "pollInterval": 5,     // Check every 5 seconds
+          "syncMode": true,      // AI Agent 必须设置
+          "syncTimeout": 600,    // 10 分钟超时
+          "pollInterval": 5,     // 每 5 秒检查一次
           "sendEmail": true,
           "sendPush": true
         }
@@ -789,47 +789,47 @@ Update UI with confirmation
 }
 ```
 
-## Key Takeaways
+## 要点总结
 
-1. **Two Message Types**:
-   - **Send**: Non-blocking status updates (workflow continues immediately)
-   - **Send and Wait**: Blocking questions (workflow pauses until response)
+1. **两种消息类型**：
+   - **Send**：非阻塞的状态更新（工作流立即继续）
+   - **Send and Wait**：阻塞式提问（工作流暂停直到收到响应）
 
-2. **Two Wait Modes**:
-   - **Webhook Mode**: Efficient, event-driven (regular workflows)
-   - **Sync Mode**: Polling-based (AI Agent tools)
+2. **两种等待模式**：
+   - **Webhook 模式**：高效、事件驱动（常规工作流）
+   - **同步模式**：基于轮询（AI Agent 工具）
 
-3. **Webhook Magic**:
-   - n8n generates unique webhook URL per execution
-   - Omnara stores URL in message metadata
-   - User response triggers webhook → workflow resumes
-   - One-time use, automatic cleanup
+3. **webhook 的奥妙**：
+   - n8n 为每次执行生成唯一的 webhook URL
+   - Omnara 将 URL 存储在消息元数据中
+   - 用户响应触发 webhook → 工作流恢复
+   - 一次性使用，自动清理
 
-4. **Agent Instance = Conversation Thread**:
-   - Same `agent_instance_id` across all nodes in workflow
-   - Groups all messages together
-   - Tracked in dashboard as single session
+4. **Agent 实例 = 对话线程**：
+   - 工作流中所有节点使用相同的 `agent_instance_id`
+   - 将所有消息归为一组
+   - 在仪表盘中作为单个会话跟踪
 
-5. **Queued Messages**:
-   - Every agent message returns pending user responses
-   - Prevents missed messages
-   - Works even if timing is off
+5. **排队消息**：
+   - 每条 agent 消息都会返回待处理的用户响应
+   - 防止消息遗漏
+   - 即使时机不对也能正常工作
 
-6. **AI Agent Compatibility**:
-   - MUST use `syncMode: true`
-   - Synchronous polling instead of async webhooks
-   - Set `usableAsTool: true` in node config
+6. **AI Agent 兼容性**：
+   - 必须使用 `syncMode: true`
+   - 使用同步轮询而非异步 webhook
+   - 在节点配置中设置 `usableAsTool: true`
 
-7. **Authentication**:
-   - Bearer token (JWT) in Authorization header
-   - User-scoped operations (can't access other users' instances)
-   - API key from dashboard
+7. **认证**：
+   - Authorization 请求头中的 Bearer token（JWT）
+   - 操作限定在用户范围内（无法访问其他用户的实例）
+   - API key 从仪表盘获取
 
-## Related Files
+## 相关文件
 
-- **n8n Node**: `src/integrations/n8n/src/nodes/Omnara/Omnara.node.ts`
-- **Webhook Handler**: `src/integrations/n8n/src/utils/sendAndWaitWebhook.ts`
-- **API Models**: `src/servers/api/models.py`
-- **DB Queries**: `src/servers/shared/db/queries.py`
-- **Authentication**: `src/servers/api/auth.py`
-- **User README**: `src/integrations/n8n/README.md`
+- **n8n 节点**：`src/integrations/n8n/src/nodes/Omnara/Omnara.node.ts`
+- **webhook 处理器**：`src/integrations/n8n/src/utils/sendAndWaitWebhook.ts`
+- **API 模型**：`src/servers/api/models.py`
+- **数据库查询**：`src/servers/shared/db/queries.py`
+- **认证**：`src/servers/api/auth.py`
+- **用户 README**：`src/integrations/n8n/README.md`

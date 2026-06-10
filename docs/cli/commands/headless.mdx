@@ -1,65 +1,65 @@
 ---
 title: omnara headless
-description: 'Run Claude Code in background mode without terminal UI'
+description: '在无终端 UI 的后台模式下运行 Claude Code'
 ---
 
-## Usage
+## 用法
 
 ```bash
 omnara headless [OPTIONS]
 ```
 
-Runs Claude Code in the background without a terminal UI. Perfect for dashboard-only interaction, automation, or when you want to control Claude exclusively through the web/mobile app.
+在后台运行 Claude Code，无需终端 UI。非常适合仅通过仪表板交互、自动化场景，或当你希望完全通过网页/移动应用控制 Claude 的情况。
 
-## Options
+## 选项
 
 <ParamField path="--prompt" type="string" default="You are starting a coding session">
-  Initial prompt to send to Claude when the session starts
+  会话启动时发送给 Claude 的初始提示词
 </ParamField>
 
 <ParamField path="--permission-mode" type="string">
-  Permission handling mode:
-  - `acceptEdits` - Automatically accept all edit operations
-  - `bypassPermissions` - Bypass all permission checks entirely
-  - `plan` - Planning mode (Claude creates plans before executing)
-  - `default` - Normal permission prompting behavior
+  权限处理模式：
+  - `acceptEdits` - 自动接受所有编辑操作
+  - `bypassPermissions` - 完全绕过所有权限检查
+  - `plan` - 规划模式（Claude 在执行前先制定计划）
+  - `default` - 正常的权限提示行为
 </ParamField>
 
 <ParamField path="--allowed-tools" type="string">
-  Comma-separated whitelist of allowed tools (e.g., `Read,Write,Bash`)
+  以逗号分隔的允许工具白名单（例如 `Read,Write,Bash`）
 </ParamField>
 
 <ParamField path="--disallowed-tools" type="string">
-  Comma-separated blacklist of disallowed tools
+  以逗号分隔的禁用工具黑名单
 </ParamField>
 
 <ParamField path="--cwd" type="string">
-  Working directory for Claude (defaults to current directory)
+  Claude 的工作目录（默认为当前目录）
 </ParamField>
 
-## Examples
+## 示例
 
 <CodeGroup>
 
 ```bash Basic
-# Run headless with default settings
+# 以默认设置运行 headless 模式
 omnara headless
 ```
 
 ```bash Auto-accept
-# Auto-accept all edits with specific tools
+# 自动接受所有编辑，并指定特定工具
 omnara headless --permission-mode acceptEdits --allowed-tools Read,Write,Bash
 ```
 
 ```bash Custom Prompt
-# Start with a specific task
+# 以特定任务启动
 omnara headless \
   --prompt "Review all files in src/ for security issues" \
   --cwd /path/to/project
 ```
 
 ```bash Planning Mode
-# Use planning mode for complex tasks
+# 对复杂任务使用规划模式
 omnara headless \
   --permission-mode plan \
   --prompt "Refactor the authentication module"
@@ -67,124 +67,124 @@ omnara headless \
 
 </CodeGroup>
 
-## Permission Modes
+## 权限模式
 
 <Tabs>
   <Tab title="acceptEdits">
-    Automatically accepts all file edit operations. Claude can still ask questions via the dashboard, but file changes happen without prompts.
+    自动接受所有文件编辑操作。Claude 仍可通过仪表板提问，但文件更改会在无需提示的情况下进行。
 
-    **Use case**: Trusted environments where you want speed over control
+    **适用场景**：在可信环境中追求速度而非控制
   </Tab>
   <Tab title="bypassPermissions">
-    Bypasses all permission checks entirely. Claude operates with full autonomy.
+    完全绕过所有权限检查。Claude 以完全自主的方式运行。
 
-    **Use case**: Fully automated workflows, CI/CD pipelines
+    **适用场景**：全自动化工作流、CI/CD 流水线
   </Tab>
   <Tab title="plan">
-    Claude creates detailed plans before executing. You can review and approve plans via dashboard.
+    Claude 在执行前制定详细计划。你可以通过仪表板审阅并批准计划。
 
-    **Use case**: Complex refactoring, architecture changes
+    **适用场景**：复杂重构、架构变更
   </Tab>
   <Tab title="default">
-    Standard permission prompts. Claude asks before executing tools that require approval.
+    标准权限提示。Claude 在执行需要批准的工具前会先询问。
 
-    **Use case**: Interactive sessions with human oversight
+    **适用场景**：需要人工监督的交互式会话
   </Tab>
 </Tabs>
 
-## Tool Filtering
+## 工具过滤
 
-Control which tools Claude can use:
+控制 Claude 可以使用哪些工具：
 
-### Whitelist (allowed-tools)
+### 白名单（allowed-tools）
 ```bash
 omnara headless --allowed-tools Read,Write,Bash
 ```
-Only these tools (plus `mcp__omnara__approve`) can be used. All others are blocked.
+只有这些工具（外加 `mcp__omnara__approve`）可以使用，其他所有工具都会被阻止。
 
-### Blacklist (disallowed-tools)
+### 黑名单（disallowed-tools）
 ```bash
 omnara headless --disallowed-tools Bash,Edit
 ```
-All tools except these can be used.
+除这些工具外，其他所有工具都可以使用。
 
-### Combined
+### 组合使用
 ```bash
 omnara headless \
   --allowed-tools Read,Write,Bash,Grep \
   --disallowed-tools Edit
 ```
-Allowed tools takes precedence. Useful for fine-grained control.
+允许工具列表优先级更高，适合进行细粒度控制。
 
 <Tip>
-The `mcp__omnara__approve` tool is always allowed, enabling dashboard interaction even with strict tool filtering.
+`mcp__omnara__approve` 工具始终被允许，即使在严格的工具过滤下也能保证仪表板交互。
 </Tip>
 
-## How It Works
+## 工作原理
 
-1. **Initialization**: Creates an agent instance and connects to Omnara MCP server
-2. **Initial Prompt**: Sends your specified prompt to Claude
-3. **Background Processing**: Claude processes the request and streams responses to dashboard
-4. **Message Queuing**: When you respond via dashboard, messages are queued and delivered to Claude
-5. **Session Persistence**: Session continues until completed or explicitly ended
+1. **初始化**：创建一个智能体实例并连接到 Omnara MCP 服务器
+2. **初始提示词**：将你指定的提示词发送给 Claude
+3. **后台处理**：Claude 处理请求并将响应流式传输到仪表板
+4. **消息排队**：当你通过仪表板回复时，消息会被排队并传递给 Claude
+5. **会话持久化**：会话会持续到完成或被显式结束为止
 
-## Dashboard Interaction
+## 仪表板交互
 
-While Claude runs headless, you can interact via dashboard:
+当 Claude 以 headless 模式运行时，你可以通过仪表板进行交互：
 
-- **Monitor Progress**: See Claude's actions in real-time
-- **Answer Questions**: Respond when Claude asks for input
-- **View Changes**: See git diffs of file modifications
-- **Control Session**: End session or provide new instructions
+- **监控进度**：实时查看 Claude 的操作
+- **回答问题**：当 Claude 需要输入时进行回复
+- **查看更改**：查看文件修改的 git diff
+- **控制会话**：结束会话或提供新的指令
 
-## Logs
+## 日志
 
-Logs are stored at:
+日志存储在：
 ```
 ~/.omnara/claude_headless/<session-id>.log
 ```
 
-View logs in real-time:
+实时查看日志：
 ```bash
 tail -f ~/.omnara/claude_headless/<session-id>.log
 ```
 
-## Use Cases
+## 使用场景
 
 <CardGroup cols={2}>
-  <Card title="Automated Code Review" icon="magnifying-glass">
+  <Card title="自动化代码审查" icon="magnifying-glass">
     ```bash
     omnara headless \
       --prompt "Review all files for security issues" \
       --allowed-tools Read,Grep
     ```
   </Card>
-  <Card title="Background Refactoring" icon="wrench">
+  <Card title="后台重构" icon="wrench">
     ```bash
     omnara headless \
       --permission-mode acceptEdits \
       --prompt "Refactor auth module"
     ```
   </Card>
-  <Card title="CI/CD Integration" icon="gears">
+  <Card title="CI/CD 集成" icon="gears">
     ```bash
     omnara headless \
       --permission-mode bypassPermissions \
       --prompt "Fix linting errors"
     ```
   </Card>
-  <Card title="Mobile-controlled Development" icon="mobile">
-    Start from your computer, control from your phone while commuting
+  <Card title="移动端控制的开发" icon="mobile">
+    在电脑上启动，通勤途中通过手机控制
   </Card>
 </CardGroup>
 
-## Related Commands
+## 相关命令
 
 <CardGroup cols={2}>
   <Card title="omnara serve" href="/cli/commands/serve">
-    Remote triggering via webhook
+    通过 webhook 远程触发
   </Card>
   <Card title="omnara mcp" href="/cli/commands/mcp">
-    MCP server for custom integrations
+    用于自定义集成的 MCP 服务器
   </Card>
 </CardGroup>

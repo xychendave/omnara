@@ -1,41 +1,41 @@
 ---
 title: omnara serve
-description: 'Start webhook server for remote triggering of Claude Code sessions'
+description: '启动 webhook 服务器以远程触发 Claude Code 会话'
 ---
 
-## Usage
+## 用法
 
 ```bash
 omnara serve [OPTIONS]
 ```
 
-Starts a webhook server that allows remote triggering of Claude Code sessions from the Omnara dashboard or other integrations. Perfect for starting AI coding sessions from your phone or automating agent launches.
+启动一个 webhook 服务器，允许从 Omnara 仪表板或其他集成远程触发 Claude Code 会话。非常适合通过手机启动 AI 编程会话或自动化启动智能体。
 
-## Options
+## 选项
 
 <ParamField path="--no-tunnel" type="boolean">
-  Run locally without Cloudflare tunnel (default: tunnel enabled)
+  在本地运行，不使用 Cloudflare 隧道（默认：启用隧道）
 </ParamField>
 
 <ParamField path="--port" type="number" default="6662">
-  Server port
+  服务器端口
 </ParamField>
 
 <ParamField path="--permission-mode" type="string">
-  Permission mode passed to Claude instances (same options as `omnara headless`)
+  传递给 Claude 实例的权限模式（选项与 `omnara headless` 相同）
 </ParamField>
 
-Additional permission flags from `omnara headless` are also supported and passed through to Claude instances.
+`omnara headless` 的其他权限相关参数同样受支持，并会透传给 Claude 实例。
 
-## Examples
+## 示例
 
 <CodeGroup>
 
 ```bash Default (with tunnel)
-# Start with Cloudflare tunnel (public URL)
+# 使用 Cloudflare 隧道启动（公开 URL）
 omnara serve
 
-# Output shows webhook URL:
+# 输出会显示 webhook URL：
 # ╔══════════════════════════════╗
 # ║  Webhook URL: https://abc123.trycloudflare.com ║
 # ║  API Key: xyz789...                            ║
@@ -43,195 +43,195 @@ omnara serve
 ```
 
 ```bash Local Only
-# Local-only server without tunnel
+# 仅本地服务器，不使用隧道
 omnara serve --no-tunnel --port 8080
 ```
 
 ```bash With Permissions
-# Set default permission mode for all instances
+# 为所有实例设置默认权限模式
 omnara serve --permission-mode acceptEdits
 ```
 
 </CodeGroup>
 
-## Setup Guide
+## 设置指南
 
-### 1. Start the Server
+### 1. 启动服务器
 
 ```bash
 omnara serve
 ```
 
-The server will start and display:
-- **Webhook URL**: Public URL for triggering (if tunnel enabled)
-- **API Key**: Secret for authenticating requests
+服务器启动后会显示：
+- **Webhook URL**：用于触发的公开 URL（如果启用了隧道）
+- **API Key**：用于验证请求的密钥
 
-### 2. Configure in Dashboard
+### 2. 在仪表板中配置
 
-1. Navigate to **Dashboard → New Session** in your [dashboard](https://claude.omnara.com/dashboard)
-2. Add a new webhook integration
-3. Paste the webhook URL
-4. Save the API key
+1. 在你的[仪表板](https://claude.omnara.com/dashboard)中进入 **Dashboard → New Session**
+2. 添加一个新的 webhook 集成
+3. 粘贴 webhook URL
+4. 保存 API key
 
-### 3. Trigger from Dashboard
+### 3. 从仪表板触发
 
-Click "Launch Agent" in the dashboard to trigger a new Claude Code session on your machine.
+在仪表板中点击"Launch Agent"，即可在你的机器上触发一个新的 Claude Code 会话。
 
-## How It Works
+## 工作原理
 
 <Steps>
-  <Step title="Webhook Server Starts">
-    Listens for HTTP POST requests on the specified port
+  <Step title="webhook 服务器启动">
+    在指定端口上监听 HTTP POST 请求
   </Step>
-  <Step title="Cloudflare Tunnel (Optional)">
-    If `--no-tunnel` is not set, starts a Cloudflare tunnel to provide a public HTTPS URL
+  <Step title="Cloudflare 隧道（可选）">
+    如果未设置 `--no-tunnel`，则启动 Cloudflare 隧道以提供公开的 HTTPS URL
   </Step>
-  <Step title="Dashboard Sends Request">
-    When you trigger from dashboard, it sends a POST request with:
-    - Agent instance ID
-    - Initial prompt
-    - Branch/worktree name (optional)
+  <Step title="仪表板发送请求">
+    当你从仪表板触发时，它会发送一个 POST 请求，包含：
+    - 智能体实例 ID
+    - 初始提示词
+    - 分支/worktree 名称（可选）
   </Step>
-  <Step title="Git Worktree Created">
-    Server creates an isolated git worktree for the session (if specified)
+  <Step title="创建 Git Worktree">
+    服务器为该会话创建一个隔离的 git worktree（如果指定）
   </Step>
-  <Step title="Claude Launched">
-    Starts a headless Claude Code instance in the worktree
+  <Step title="启动 Claude">
+    在该 worktree 中启动一个 headless Claude Code 实例
   </Step>
-  <Step title="Background Execution">
-    Claude runs as a background task, communicating via dashboard
+  <Step title="后台执行">
+    Claude 作为后台任务运行，通过仪表板进行通信
   </Step>
 </Steps>
 
-## Cloudflare Tunnel
+## Cloudflare 隧道
 
-By default, `omnara serve` uses Cloudflare tunnels to expose a public HTTPS URL without port forwarding or firewall configuration.
+默认情况下，`omnara serve` 使用 Cloudflare 隧道暴露一个公开的 HTTPS URL，无需端口转发或防火墙配置。
 
-### With Tunnel (Default)
+### 使用隧道（默认）
 ```bash
 omnara serve
-# → Accessible from anywhere via https://xxx.trycloudflare.com
+# → 可通过 https://xxx.trycloudflare.com 从任何地方访问
 ```
 
-**Advantages:**
-- No port forwarding needed
-- HTTPS encryption
-- Works behind corporate firewalls
-- Free (using Cloudflare's free tier)
+**优势：**
+- 无需端口转发
+- HTTPS 加密
+- 可在企业防火墙后工作
+- 免费（使用 Cloudflare 的免费层）
 
-### Without Tunnel (Local)
+### 不使用隧道（本地）
 ```bash
 omnara serve --no-tunnel --port 8080
-# → Only accessible from local network at http://localhost:8080
+# → 仅可通过本地网络在 http://localhost:8080 访问
 ```
 
-**When to use:**
-- Self-hosted environments with existing reverse proxy
-- Local development/testing
-- Security policies prevent external tunnels
+**适用情况：**
+- 已配置反向代理的自托管环境
+- 本地开发/测试
+- 安全策略禁止使用外部隧道
 
 <Tip>
-Cloudflare tunnel requires `cloudflared` to be installed. On macOS, it's automatically installed via Homebrew if missing.
+Cloudflare 隧道需要安装 `cloudflared`。在 macOS 上，如果缺失会自动通过 Homebrew 安装。
 </Tip>
 
-## Git Worktree Isolation
+## Git Worktree 隔离
 
-The webhook server creates isolated git worktrees for each session, allowing multiple Claude instances to work on different branches simultaneously without conflicts.
+webhook 服务器为每个会话创建隔离的 git worktree，允许多个 Claude 实例同时在不同分支上工作而互不冲突。
 
 ```bash
-# Trigger creates worktree:
+# 触发时创建 worktree：
 git worktree add ./feature-auth -b feature-auth
 
-# Claude works in isolated directory:
+# Claude 在隔离目录中工作：
 ./feature-auth/
 
-# Main worktree remains clean:
+# 主 worktree 保持干净：
 ./
 ```
 
-**Worktree Modes:**
-- **Main**: Use current directory (no isolation)
-- **Existing**: Reuse existing worktree if found
-- **New**: Create fresh worktree with new branch
+**Worktree 模式：**
+- **Main**：使用当前目录（不隔离）
+- **Existing**：如果找到已有 worktree 则复用
+- **New**：使用新分支创建全新的 worktree
 
-## Security
+## 安全性
 
-### Authentication
-- Webhook secret generated at startup
-- Included in webhook URL or sent separately
-- Validated on every request
+### 身份验证
+- webhook 密钥在启动时生成
+- 包含在 webhook URL 中或单独发送
+- 每个请求都会进行校验
 
-### API Key Handling
-- Each triggered instance gets a unique Omnara API key
-- Keys are hashed (SHA256) before storage
-- Scoped to authenticated user only
+### API Key 处理
+- 每个被触发的实例都会获得唯一的 Omnara API key
+- 密钥在存储前会进行哈希处理（SHA256）
+- 仅限已认证用户范围内使用
 
-### Network Security
-- Cloudflare tunnel provides HTTPS encryption
-- Local mode requires manual SSL configuration
-- Webhook secret prevents unauthorized access
+### 网络安全
+- Cloudflare 隧道提供 HTTPS 加密
+- 本地模式需要手动配置 SSL
+- webhook 密钥可防止未授权访问
 
-## Use Cases
+## 使用场景
 
 <CardGroup cols={2}>
-  <Card title="Mobile Development" icon="mobile">
-    Start coding sessions from your phone while away from your computer
+  <Card title="移动端开发" icon="mobile">
+    离开电脑时通过手机启动编程会话
   </Card>
-  <Card title="Automated Workflows" icon="gears">
-    Trigger Claude Code from CI/CD pipelines or other automation
+  <Card title="自动化工作流" icon="gears">
+    从 CI/CD 流水线或其他自动化系统触发 Claude Code
   </Card>
-  <Card title="Team Collaboration" icon="users">
-    Allow teammates to trigger Claude on shared development machines
+  <Card title="团队协作" icon="users">
+    允许团队成员在共享的开发机器上触发 Claude
   </Card>
-  <Card title="Scheduled Tasks" icon="clock">
-    Combine with cron/scheduling to run Claude at specific times
+  <Card title="定时任务" icon="clock">
+    结合 cron/调度系统，在指定时间运行 Claude
   </Card>
 </CardGroup>
 
-## Troubleshooting
+## 故障排查
 
 <AccordionGroup>
-  <Accordion title="Tunnel fails to start">
-    Ensure `cloudflared` is installed:
+  <Accordion title="隧道启动失败">
+    确保已安装 `cloudflared`：
     ```bash
     brew install cloudflared  # macOS
     ```
 
-    Or use local mode:
+    或使用本地模式：
     ```bash
     omnara serve --no-tunnel
     ```
   </Accordion>
 
-  <Accordion title="Webhook triggers but Claude doesn't start">
-    Check logs at:
+  <Accordion title="webhook 已触发但 Claude 未启动">
+    检查日志：
     ```
     ~/.omnara/claude_headless/<session-id>.log
     ```
 
-    Verify Claude Code CLI is installed:
+    确认已安装 Claude Code CLI：
     ```bash
     claude --version
     ```
   </Accordion>
 
-  <Accordion title="Git worktree errors">
-    Ensure you're in a git repository:
+  <Accordion title="Git worktree 错误">
+    确保你位于一个 git 仓库中：
     ```bash
     git status
     ```
 
-    Or specify main worktree in request to skip isolation
+    或在请求中指定主 worktree 以跳过隔离
   </Accordion>
 </AccordionGroup>
 
-## Related Commands
+## 相关命令
 
 <CardGroup cols={2}>
   <Card title="omnara headless" href="/cli/commands/headless">
-    Run Claude without webhook server
+    在不使用 webhook 服务器的情况下运行 Claude
   </Card>
   <Card title="GitHub Actions" href="/integrations/github-actions">
-    Integrate with GitHub workflows
+    与 GitHub 工作流集成
   </Card>
 </CardGroup>

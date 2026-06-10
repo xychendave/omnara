@@ -1,40 +1,40 @@
 ---
-title: MCP Client Integration
-description: 'Connect Omnara with MCP-compatible AI clients'
+title: MCP 客户端集成
+description: '将 Omnara 与兼容 MCP 的 AI 客户端连接'
 ---
 
-## Overview
+## 概述
 
-Omnara provides an MCP (Model Context Protocol) server that integrates with various AI coding assistants including Claude Desktop, Cursor, Cline, Windsurf, and more.
+Omnara 提供一个 MCP（Model Context Protocol）服务器，可与多种 AI 编程助手集成，包括 Claude Desktop、Cursor、Cline、Windsurf 等。
 
-## Supported Clients
+## 支持的客户端
 
 <CardGroup cols={3}>
   <Card title="Claude Desktop" icon="desktop">
-    Stdio transport
+    Stdio 传输
   </Card>
   <Card title="Claude Code" icon="terminal">
-    Stdio transport
+    Stdio 传输
   </Card>
   <Card title="Cursor" icon="code">
-    HTTP/Stdio transport
+    HTTP/Stdio 传输
   </Card>
   <Card title="Cline" icon="robot">
-    Stdio transport
+    Stdio 传输
   </Card>
   <Card title="Windsurf" icon="wind">
-    SSE transport
+    SSE 传输
   </Card>
-  <Card title="Custom" icon="plug">
-    Any MCP client
+  <Card title="自定义" icon="plug">
+    任何 MCP 客户端
   </Card>
 </CardGroup>
 
-## Quick Setup
+## 快速设置
 
 ### Claude Desktop
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+编辑 `~/Library/Application Support/Claude/claude_desktop_config.json`（macOS）或 `%APPDATA%\Claude\claude_desktop_config.json`（Windows）：
 
 ```json
 {
@@ -49,7 +49,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 
 ### Cursor
 
-Add to your Cursor settings or `.cursorrules`:
+添加到你的 Cursor 设置或 `.cursorrules` 中：
 
 ```json
 {
@@ -63,9 +63,9 @@ Add to your Cursor settings or `.cursorrules`:
 }
 ```
 
-### Using pipx
+### 使用 pipx
 
-If you installed Omnara with pipx:
+如果你是通过 pipx 安装的 Omnara：
 
 ```json
 {
@@ -78,50 +78,50 @@ If you installed Omnara with pipx:
 }
 ```
 
-## Available Tools
+## 可用工具
 
-When you add Omnara as an MCP server, AI agents get access to these tools:
+将 Omnara 添加为 MCP 服务器后，AI 智能体可以使用以下工具：
 
 <Tabs>
   <Tab title="log_step">
-    **Purpose**: Log progress updates
+    **用途**：记录进度更新
 
-    **Use case**: Track what the agent is doing
-    - "Analyzing codebase structure..."
-    - "Found 5 files to review"
-    - "Making changes to authentication.py"
+    **使用场景**：跟踪智能体正在做什么
+    - 「正在分析代码库结构……」
+    - 「找到 5 个需要审查的文件」
+    - 「正在修改 authentication.py」
   </Tab>
 
   <Tab title="ask_question">
-    **Purpose**: Ask user questions
+    **用途**：向用户提问
 
-    **Use case**: Get human input when needed
-    - "Should I proceed with this refactor?"
-    - "Which approach do you prefer?"
-    - "Can I delete this deprecated file?"
+    **使用场景**：在需要时获取人工输入
+    - 「我可以继续进行这次重构吗？」
+    - 「你更倾向于哪种方案？」
+    - 「我可以删除这个已弃用的文件吗？」
   </Tab>
 
   <Tab title="end_session">
-    **Purpose**: Mark work complete
+    **用途**：标记工作完成
 
-    **Use case**: Clean session tracking
-    - Marks session as COMPLETED
-    - Appears in dashboard history
+    **使用场景**：清晰的会话跟踪
+    - 将会话标记为 COMPLETED
+    - 显示在仪表板历史记录中
   </Tab>
 
-  <Tab title="approve (optional)">
-    **Purpose**: Permission prompts
+  <Tab title="approve（可选）">
+    **用途**：权限提示
 
-    **Use case**: Remote approval for Claude Code
-    - Enable with `--permission-tool`
-    - Route permission prompts through dashboard
-    - Approve actions from anywhere
+    **使用场景**：为 Claude Code 提供远程批准
+    - 通过 `--permission-tool` 启用
+    - 将权限提示路由到仪表板
+    - 随时随地批准操作
   </Tab>
 </Tabs>
 
-## Advanced Configuration
+## 高级配置
 
-### Enable Git Diff Tracking
+### 启用 Git Diff 跟踪
 
 ```json
 {
@@ -134,9 +134,9 @@ When you add Omnara as an MCP server, AI agents get access to these tools:
 }
 ```
 
-Automatically captures code changes with every message.
+自动在每条消息中捕获代码变更。
 
-### Permission Tool Mode
+### 权限工具模式
 
 ```json
 {
@@ -154,9 +154,9 @@ Automatically captures code changes with every message.
 }
 ```
 
-Use Omnara purely for permission prompts, disabling other tools to reduce overhead.
+仅将 Omnara 用于权限提示，禁用其他工具以减少开销。
 
-### Resume Existing Session
+### 恢复已有会话
 
 ```json
 {
@@ -173,119 +173,119 @@ Use Omnara purely for permission prompts, disabling other tools to reduce overhe
 }
 ```
 
-Continue an existing session instead of creating a new one.
+继续一个已有会话，而不是创建新会话。
 
-## How It Works
+## 工作原理
 
 <Steps>
-  <Step title="Client Starts MCP Server">
-    Your AI client (Claude Desktop, Cursor, etc.) launches `omnara mcp` as a subprocess
+  <Step title="客户端启动 MCP 服务器">
+    你的 AI 客户端（Claude Desktop、Cursor 等）以子进程方式启动 `omnara mcp`
   </Step>
 
-  <Step title="Tools Registered">
-    Omnara registers available tools with the MCP client via stdio protocol
+  <Step title="注册工具">
+    Omnara 通过 stdio 协议向 MCP 客户端注册可用工具
   </Step>
 
-  <Step title="Agent Uses Tools">
-    AI agent calls tools as needed:
+  <Step title="智能体使用工具">
+    AI 智能体按需调用工具：
     - `log_step("Analyzing code...")`
     - `ask_question("Proceed with changes?")`
   </Step>
 
-  <Step title="Synced to Dashboard">
-    All messages and questions appear in real-time on your Omnara dashboard
+  <Step title="同步到仪表板">
+    所有消息和提问会实时显示在你的 Omnara 仪表板上
   </Step>
 
-  <Step title="User Responds">
-    You can respond to questions from:
-    - Web dashboard
-    - Mobile app
-    - Any device with Omnara access
+  <Step title="用户回复">
+    你可以通过以下方式回复提问：
+    - Web 仪表板
+    - 移动应用
+    - 任何可访问 Omnara 的设备
   </Step>
 
-  <Step title="Response Delivered">
-    Your response is sent back to the AI agent via the MCP server
+  <Step title="回复送达">
+    你的回复会通过 MCP 服务器发送回 AI 智能体
   </Step>
 </Steps>
 
-## Use Cases
+## 使用场景
 
 <AccordionGroup>
-  <Accordion title="Mobile Oversight" icon="mobile">
-    Monitor what Claude Desktop is doing from your phone. Respond to questions while away from your computer.
+  <Accordion title="移动端监督" icon="mobile">
+    通过手机监控 Claude Desktop 正在做什么。不在电脑旁时也能回复提问。
   </Accordion>
 
-  <Accordion title="Session History" icon="clock-rotate-left">
-    All Claude Desktop conversations are logged to your Omnara dashboard. Review what agents did, even after closing the app.
+  <Accordion title="会话历史" icon="clock-rotate-left">
+    所有 Claude Desktop 对话都会记录到你的 Omnara 仪表板。即使关闭应用后，也能回顾智能体做了什么。
   </Accordion>
 
-  <Accordion title="Multi-Device Control" icon="devices">
-    Start work in Cursor on your laptop, continue monitoring on your phone, respond from your tablet.
+  <Accordion title="多设备控制" icon="devices">
+    在笔记本电脑上用 Cursor 开始工作，在手机上继续监控，在平板上进行回复。
   </Accordion>
 
-  <Accordion title="Team Visibility" icon="users">
-    Share agent session links with teammates. Collaborate on AI-assisted development.
+  <Accordion title="团队可见性" icon="users">
+    与团队成员分享智能体会话链接。协作进行 AI 辅助开发。
   </Accordion>
 
-  <Accordion title="Remote Permissions" icon="shield">
-    Approve Claude Code actions remotely through dashboard instead of local terminal prompts.
+  <Accordion title="远程权限批准" icon="shield">
+    通过仪表板远程批准 Claude Code 的操作，而不是在本地终端中处理权限提示。
   </Accordion>
 </AccordionGroup>
 
-## Troubleshooting
+## 故障排除
 
 <AccordionGroup>
-  <Accordion title="MCP server not connecting">
-    **Check:**
-    1. Omnara is installed: `omnara --version`
-    2. API key is valid: `omnara mcp --api-key YOUR_KEY` (test manually)
-    3. Config file syntax is correct (valid JSON)
-    4. No typos in command or args
+  <Accordion title="MCP 服务器无法连接">
+    **检查：**
+    1. Omnara 已安装：`omnara --version`
+    2. API key 有效：`omnara mcp --api-key YOUR_KEY`（手动测试）
+    3. 配置文件语法正确（合法的 JSON）
+    4. 命令或参数没有拼写错误
 
-    **Debug:**
+    **调试：**
     ```bash
-    # Test MCP server manually
+    # 手动测试 MCP 服务器
     omnara mcp --api-key YOUR_KEY
 
-    # Check logs
+    # 查看日志
     # Claude Desktop: ~/Library/Logs/Claude/mcp.log
     ```
   </Accordion>
 
-  <Accordion title="Tools not appearing">
-    **Causes:**
-    - Client doesn't support MCP tools
-    - Configuration not reloaded
-    - Wrong transport type for client
+  <Accordion title="工具未显示">
+    **原因：**
+    - 客户端不支持 MCP 工具
+    - 配置未重新加载
+    - 客户端使用了错误的传输类型
 
-    **Fix:**
-    1. Restart your AI client
-    2. Check client supports MCP stdio
-    3. Verify tool registration in client logs
+    **修复：**
+    1. 重启你的 AI 客户端
+    2. 确认客户端支持 MCP stdio
+    3. 在客户端日志中验证工具注册情况
   </Accordion>
 
-  <Accordion title="Messages not in dashboard">
-    **Causes:**
-    - Wrong API key
-    - Network/firewall blocking
-    - Wrong base URL (for self-hosted)
+  <Accordion title="消息未出现在仪表板">
+    **原因：**
+    - API key 错误
+    - 网络/防火墙阻拦
+    - base URL 错误（自托管场景）
 
-    **Fix:**
+    **修复：**
     ```bash
-    # Test API key manually
+    # 手动测试 API key
     curl -H "Authorization: Bearer YOUR_KEY" \
       https://agent.omnara.com/api/v1/auth/verify
     ```
   </Accordion>
 </AccordionGroup>
 
-## Related Documentation
+## 相关文档
 
 <CardGroup cols={2}>
-  <Card title="omnara mcp Command" href="/cli/commands/mcp">
-    Complete MCP server documentation
+  <Card title="omnara mcp 命令" href="/cli/commands/mcp">
+    完整的 MCP 服务器文档
   </Card>
   <Card title="Python SDK" href="/api/sdk">
-    Build custom MCP integrations
+    构建自定义 MCP 集成
   </Card>
 </CardGroup>

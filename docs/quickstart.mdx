@@ -1,11 +1,11 @@
 ---
-title: Quickstart
-description: 'Get started with Omnara in under 5 minutes'
+title: 快速开始
+description: '5 分钟内上手 Omnara'
 ---
 
 <Steps>
-  <Step title="Install Omnara">
-    Choose your preferred package manager:
+  <Step title="安装 Omnara">
+    选择你偏好的包管理器：
 
     <CodeGroup>
     ```bash pip
@@ -26,155 +26,155 @@ description: 'Get started with Omnara in under 5 minutes'
     </CodeGroup>
   </Step>
 
-  <Step title="Start Your Agent">
-    Launch Claude Code with dashboard integration:
+  <Step title="启动你的智能体">
+    启动带仪表盘集成的 Claude Code：
 
     ```bash
     omnara
     ```
 
-    On first run, this will:
-    1. Open your browser for authentication
-    2. Prompt you to sign in to Omnara (or create an account)
-    3. Automatically save your API key to `~/.omnara/credentials.json`
+    首次运行时，它将：
+    1. 打开浏览器进行认证
+    2. 提示你登录 Omnara（或创建账户）
+    3. 自动将你的 API key 保存到 `~/.omnara/credentials.json`
 
-    Everything you do in the terminal is now synced to your [dashboard](https://claude.omnara.com/dashboard) and mobile app.
+    你在终端中的所有操作现在都会同步到你的[仪表盘](https://claude.omnara.com/dashboard)和移动应用。
 
     <Tip>
-    Authentication happens automatically on first run. You can also explicitly authenticate with `omnara --auth` if needed.
+    首次运行时会自动进行认证。如有需要，也可以使用 `omnara --auth` 显式认证。
     </Tip>
   </Step>
 
-  <Step title="Try Other Modes">
-    Explore different usage patterns:
+  <Step title="尝试其他模式">
+    探索不同的使用方式：
 
     <CodeGroup>
     ```bash Headless
-    # Run in background without terminal UI
+    # 在后台运行，无终端 UI
     omnara headless --prompt "Review this codebase"
     ```
 
     ```bash Webhook Server
-    # Enable remote triggering
+    # 启用远程触发
     omnara serve
     ```
 
     ```bash Different Agent
-    # Use Codex instead of Claude Code
+    # 使用 Codex 替代 Claude Code
     omnara --agent codex
     ```
     </CodeGroup>
   </Step>
 </Steps>
 
-## Next Steps
+## 下一步
 
 <CardGroup cols={2}>
   <Card
-    title="CLI Commands"
+    title="CLI 命令"
     icon="terminal"
     href="/cli/overview"
   >
-    Explore all available commands
+    探索所有可用命令
   </Card>
   <Card
-    title="n8n Integration"
+    title="n8n 集成"
     icon="workflow"
     href="/integrations/n8n"
   >
-    Add human-in-the-loop to workflows
+    为工作流加入人工参与环节
   </Card>
   <Card
     title="Python SDK"
     icon="python"
     href="/api/sdk"
   >
-    Build custom integrations
+    构建自定义集成
   </Card>
   <Card
-    title="Environment Variables"
+    title="环境变量"
     icon="gear"
     href="/cli/environment-variables"
   >
-    Configure with env vars
+    使用环境变量进行配置
   </Card>
 </CardGroup>
 
-## Common Workflows
+## 常见工作流
 
 <AccordionGroup>
-  <Accordion title="Development with Claude Code" icon="code">
+  <Accordion title="使用 Claude Code 进行开发" icon="code">
     ```bash
-    # Set Claude as default
+    # 将 Claude 设为默认
     omnara --set-default claude
 
-    # Start a named session
+    # 启动一个命名会话
     omnara --name "Feature Development"
 
-    # Work in terminal as usual
-    # Everything syncs to dashboard automatically
+    # 像往常一样在终端中工作
+    # 所有内容自动同步到仪表盘
     ```
   </Accordion>
 
-  <Accordion title="Background Code Review" icon="magnifying-glass">
+  <Accordion title="后台代码审查" icon="magnifying-glass">
     ```bash
-    # Start headless review
+    # 启动 headless 审查
     omnara headless \
       --prompt "Review all files in src/ for security issues" \
       --allowed-tools Read,Grep \
       --cwd /path/to/project
 
-    # Check dashboard for results
-    # Respond to any questions Claude asks
+    # 在仪表盘查看结果
+    # 回复 Claude 提出的任何问题
     ```
   </Accordion>
 
-  <Accordion title="Remote Mobile Development" icon="mobile">
+  <Accordion title="远程移动开发" icon="mobile">
     ```bash
-    # On your computer, start webhook server
+    # 在你的电脑上，启动 webhook 服务器
     omnara serve
 
-    # From your phone:
-    # 1. Open Omnara app
-    # 2. Go to Settings → Integrations
-    # 3. Add webhook configuration
-    # 4. Tap "Launch Agent" to trigger Claude on your computer
+    # 在你的手机上：
+    # 1. 打开 Omnara 应用
+    # 2. 进入 Settings → Integrations
+    # 3. 添加 webhook 配置
+    # 4. 点击 "Launch Agent" 在你的电脑上触发 Claude
     ```
   </Accordion>
 </AccordionGroup>
 
-## Troubleshooting
+## 故障排查
 
 <AccordionGroup>
-  <Accordion title="Authentication fails">
+  <Accordion title="认证失败">
     ```bash
-    # Try re-authenticating
+    # 尝试重新认证
     omnara --reauth
 
-    # Or set API key manually
+    # 或手动设置 API key
     export OMNARA_API_KEY="your-key-here"
     omnara
     ```
   </Accordion>
 
-  <Accordion title="Agent not found">
-    Ensure the agent CLI is installed:
+  <Accordion title="找不到智能体">
+    确保智能体的 CLI 已安装：
 
     ```bash
     # Claude Code
     claude --version
 
-    # Codex (packaged with Omnara)
-    # Should work out of the box
+    # Codex（已随 Omnara 打包）
+    # 应当开箱即用
 
     # Amp
     amp --version
     ```
   </Accordion>
 
-  <Accordion title="Dashboard not updating">
-    1. Check you're not using `--no-relay`
-    2. Verify internet connection
-    3. Check logs: `~/.omnara/<agent>_wrapper/<session-id>.log`
+  <Accordion title="仪表盘未更新">
+    1. 检查你是否使用了 `--no-relay`
+    2. 确认网络连接正常
+    3. 检查日志：`~/.omnara/<agent>_wrapper/<session-id>.log`
   </Accordion>
 </AccordionGroup>

@@ -1,64 +1,64 @@
 ---
 title: omnara mcp
-description: 'Run MCP stdio server for protocol integrations'
+description: '运行 MCP stdio 服务器以进行协议集成'
 ---
 
-## Usage
+## 用法
 
 ```bash
 omnara mcp [OPTIONS]
 ```
 
-Runs the MCP (Model Context Protocol) stdio server for integration with MCP-compatible clients like Claude Desktop, Cursor, Cline, and other AI coding assistants.
+运行 MCP（Model Context Protocol）stdio 服务器，用于与 Claude Desktop、Cursor、Cline 等兼容 MCP 的客户端以及其他 AI 编程助手集成。
 
-## Options
+## 选项
 
 <ParamField path="--api-key" type="string" required>
-  API key for authentication
+  用于身份验证的 API key
 </ParamField>
 
 <ParamField path="--permission-tool" type="boolean">
-  Enable Claude Code permission prompt tool
+  启用 Claude Code 权限提示工具
 </ParamField>
 
 <ParamField path="--git-diff" type="boolean">
-  Enable automatic git diff capture for all messages
+  为所有消息启用自动 git diff 捕获
 </ParamField>
 
 <ParamField path="--agent-instance-id" type="string">
-  Use existing agent instance instead of creating new one
+  使用已有的智能体实例，而不是创建新实例
 </ParamField>
 
 <ParamField path="--disable-tools" type="boolean">
-  Disable all tools except the permission tool
+  禁用除权限工具外的所有工具
 </ParamField>
 
-## Examples
+## 示例
 
 <CodeGroup>
 
 ```bash Basic
-# Start MCP server
+# 启动 MCP 服务器
 omnara mcp --api-key YOUR_KEY
 ```
 
 ```bash Full Features
-# Enable git diff tracking and permission prompts
+# 启用 git diff 跟踪和权限提示
 omnara mcp --api-key YOUR_KEY --git-diff --permission-tool
 ```
 
 ```bash Permission Only
-# Run only permission prompt tool
+# 仅运行权限提示工具
 omnara mcp --api-key YOUR_KEY --permission-tool --disable-tools
 ```
 
 </CodeGroup>
 
-## MCP Client Configuration
+## MCP 客户端配置
 
 ### Claude Desktop
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+编辑 `~/Library/Application Support/Claude/claude_desktop_config.json`（macOS）：
 
 ```json claude_desktop_config.json
 {
@@ -73,7 +73,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
 
 ### Cursor
 
-Edit `.cursorrules` or Cursor settings:
+编辑 `.cursorrules` 或 Cursor 设置：
 
 ```json
 {
@@ -87,9 +87,9 @@ Edit `.cursorrules` or Cursor settings:
 }
 ```
 
-### Using pipx
+### 使用 pipx
 
-For pipx installations:
+对于 pipx 安装方式：
 
 ```json
 {
@@ -102,174 +102,174 @@ For pipx installations:
 }
 ```
 
-## Available Tools
+## 可用工具
 
-The MCP server provides these tools to AI agents:
+MCP 服务器向 AI 智能体提供以下工具：
 
 <Tabs>
   <Tab title="log_step">
-    **Purpose**: Log high-level steps the agent is performing
+    **用途**：记录智能体正在执行的高层级步骤
 
-    **Parameters:**
-    - `step_description` (required): What the agent is doing
-    - `agent_instance_id` (optional): Instance ID
+    **参数：**
+    - `step_description`（必填）：智能体正在做什么
+    - `agent_instance_id`（可选）：实例 ID
 
-    **Returns:**
-    - `agent_instance_id`: Session identifier
-    - `step_number`: Sequential step count
-    - `user_feedback`: List of queued user messages
+    **返回值：**
+    - `agent_instance_id`：会话标识符
+    - `step_number`：递增的步骤计数
+    - `user_feedback`：排队中的用户消息列表
 
-    **Key Feature**: Returns pending user feedback with every step
+    **关键特性**：每个步骤都会返回待处理的用户反馈
   </Tab>
 
   <Tab title="ask_question">
-    **Purpose**: Ask user a question and block until answer received
+    **用途**：向用户提问并阻塞等待回答
 
-    **Parameters:**
-    - `agent_instance_id` (required): Current session
-    - `question_text` (required): Question to ask
+    **参数：**
+    - `agent_instance_id`（必填）：当前会话
+    - `question_text`（必填）：要提出的问题
 
-    **Returns:**
-    - `answer`: User's response text
-    - `question_id`: Message ID
+    **返回值：**
+    - `answer`：用户的回复文本
+    - `question_id`：消息 ID
 
-    **Behavior**: Polls for response (default 24-hour timeout, 10-second interval)
+    **行为**：轮询等待回复（默认 24 小时超时，10 秒间隔）
   </Tab>
 
   <Tab title="end_session">
-    **Purpose**: Mark agent session as completed
+    **用途**：将智能体会话标记为已完成
 
-    **Parameters:**
-    - `agent_instance_id` (required): Session to end
+    **参数：**
+    - `agent_instance_id`（必填）：要结束的会话
 
-    **Returns:**
-    - `success`: Boolean
-    - `final_status`: Should be "completed"
+    **返回值：**
+    - `success`：布尔值
+    - `final_status`：应为 "completed"
 
-    **Effect**: Sets status to COMPLETED, timestamps end time
+    **效果**：将状态设置为 COMPLETED，并记录结束时间戳
   </Tab>
 
-  <Tab title="approve (optional)">
-    **Purpose**: Claude Code permission prompt handler
+  <Tab title="approve（可选）">
+    **用途**：Claude Code 权限提示处理器
 
-    **Enabled by**: `--permission-tool` flag
+    **启用方式**：`--permission-tool` 参数
 
-    **Parameters:**
-    - `tool_name`: Tool requesting permission
-    - `input`: Tool parameters
+    **参数：**
+    - `tool_name`：请求权限的工具
+    - `input`：工具参数
 
-    **Features:**
-    - Presents options: Yes (once), Yes (for session), No
-    - Caches permissions in memory per instance
-    - Formats prompts as markdown
+    **特性：**
+    - 提供选项：是（仅此次）、是（本会话内）、否
+    - 按实例在内存中缓存权限
+    - 将提示格式化为 markdown
 
-    **Returns**: `{"behavior": "allow"|"deny"}`
+    **返回值**：`{"behavior": "allow"|"deny"}`
   </Tab>
 </Tabs>
 
-## Git Diff Capture
+## Git Diff 捕获
 
-When `--git-diff` is enabled:
+启用 `--git-diff` 后：
 
 <Steps>
-  <Step title="Initialization">
-    Captures initial git commit hash at startup
+  <Step title="初始化">
+    在启动时捕获初始 git 提交哈希
   </Step>
-  <Step title="Diff Generation">
-    On every `log_step` and `ask_question` call, generates diff showing all changes from initial commit to current state
+  <Step title="生成 Diff">
+    每次调用 `log_step` 和 `ask_question` 时，生成展示从初始提交到当前状态所有更改的 diff
   </Step>
-  <Step title="Worktree Exclusion">
-    Automatically excludes other git worktrees from the diff
+  <Step title="排除 Worktree">
+    自动将其他 git worktree 排除在 diff 之外
   </Step>
-  <Step title="Untracked Files">
-    Includes untracked files in diff-like format
+  <Step title="未跟踪文件">
+    以类似 diff 的格式包含未跟踪的文件
   </Step>
 </Steps>
 
-**Use case**: Automatically track code changes without manual git commands. The diff is attached to every message sent to the dashboard.
+**适用场景**：无需手动执行 git 命令即可自动跟踪代码更改。diff 会附加在发送到仪表板的每条消息上。
 
-## Permission Tool
+## 权限工具
 
-Enable with `--permission-tool` to route Claude Code permission prompts through the Omnara dashboard:
+通过 `--permission-tool` 启用，将 Claude Code 权限提示路由到 Omnara 仪表板：
 
 ```bash
 omnara mcp --api-key YOUR_KEY --permission-tool
 ```
 
-**How it works:**
-1. Claude Code asks for permission (e.g., "Run this bash command?")
-2. Request is sent to Omnara MCP server via `approve` tool
-3. Dashboard shows permission prompt to user
-4. User approves/denies via dashboard
-5. Response sent back to Claude Code
-6. Permission decision cached for session
+**工作流程：**
+1. Claude Code 请求权限（例如"运行这个 bash 命令？"）
+2. 请求通过 `approve` 工具发送到 Omnara MCP 服务器
+3. 仪表板向用户显示权限提示
+4. 用户通过仪表板批准/拒绝
+5. 响应回传给 Claude Code
+6. 权限决定在本会话内缓存
 
-**Benefits:**
-- Approve Claude Code actions remotely
-- Review permission requests before approval
-- Session-wide permission caching
+**优势：**
+- 远程批准 Claude Code 的操作
+- 在批准前审阅权限请求
+- 会话级别的权限缓存
 
-## Tool Disabling
+## 禁用工具
 
-Use `--disable-tools` to disable all tools except the permission tool:
+使用 `--disable-tools` 可禁用除权限工具外的所有工具：
 
 ```bash
 omnara mcp --api-key YOUR_KEY --permission-tool --disable-tools
 ```
 
-**Use case**: When using Omnara purely for permission prompts with Claude Code, reduce overhead by disabling logging/question tools.
+**适用场景**：当你仅将 Omnara 用于 Claude Code 的权限提示时，禁用日志/提问工具以降低开销。
 
-## How It Works
+## 工作原理
 
-1. **Stdio Server**: Communicates via stdin/stdout using MCP protocol
-2. **Tool Registration**: Registers available tools with the MCP client
-3. **Request Handling**: Processes tool calls from AI agents
-4. **API Integration**: Forwards messages to Omnara API for storage/dashboard sync
-5. **Response Delivery**: Returns results to AI agent via stdio
+1. **Stdio 服务器**：使用 MCP 协议通过 stdin/stdout 通信
+2. **工具注册**：向 MCP 客户端注册可用工具
+3. **请求处理**：处理来自 AI 智能体的工具调用
+4. **API 集成**：将消息转发到 Omnara API 进行存储/仪表板同步
+5. **响应传递**：通过 stdio 将结果返回给 AI 智能体
 
-## Supported Clients
+## 支持的客户端
 
 <CardGroup cols={3}>
   <Card title="Claude Desktop" icon="desktop">
-    Stdio transport
+    Stdio 传输
   </Card>
   <Card title="Claude Code" icon="terminal">
-    Stdio transport
+    Stdio 传输
   </Card>
   <Card title="Cursor" icon="code">
-    HTTP/Stdio transport
+    HTTP/Stdio 传输
   </Card>
   <Card title="Cline" icon="robot">
-    Stdio transport
+    Stdio 传输
   </Card>
   <Card title="Windsurf" icon="wave">
-    SSE transport
+    SSE 传输
   </Card>
-  <Card title="Custom Clients" icon="plug">
-    Any MCP-compatible client
+  <Card title="自定义客户端" icon="plug">
+    任何兼容 MCP 的客户端
   </Card>
 </CardGroup>
 
-## Authentication
+## 身份验证
 
-Uses JWT-based authentication with custom RSA keys:
+使用基于 JWT 的身份验证和自定义 RSA 密钥：
 
-- API key is a JWT token with `user_id` claim
-- Weaker RSA keys used for shorter API keys (design tradeoff)
-- All operations scoped to authenticated user
-- Keys should be kept secure despite weaker crypto
+- API key 是带有 `user_id` 声明的 JWT 令牌
+- 为缩短 API key 使用了较弱的 RSA 密钥（设计上的权衡）
+- 所有操作均限定在已认证用户范围内
+- 尽管加密强度较弱，密钥仍应妥善保管
 
 <Warning>
-Store API keys securely. While the MCP server uses weaker RSA for shorter keys, they still provide user-level access to your Omnara account.
+请安全地存储 API key。虽然 MCP 服务器为缩短密钥长度使用了较弱的 RSA，但它们仍能提供对你 Omnara 账户的用户级访问权限。
 </Warning>
 
-## Related Documentation
+## 相关文档
 
 <CardGroup cols={2}>
-  <Card title="MCP Clients Integration" href="/integrations/mcp-clients">
-    Detailed client configuration examples
+  <Card title="MCP 客户端集成" href="/integrations/mcp-clients">
+    详细的客户端配置示例
   </Card>
   <Card title="Python SDK" href="/api/sdk">
-    Programmatic access to same functionality
+    以编程方式访问相同功能
   </Card>
 </CardGroup>

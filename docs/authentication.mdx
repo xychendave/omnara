@@ -1,45 +1,45 @@
 ---
-title: Authentication
-description: 'Set up authentication for Omnara CLI'
+title: 认证
+description: '为 Omnara CLI 设置认证'
 ---
 
-## Overview
+## 概览
 
-Omnara uses API keys for authentication. You can obtain an API key through browser-based OAuth or by manually copying it from your dashboard.
+Omnara 使用 API key 进行认证。你可以通过基于浏览器的 OAuth 获取 API key，或从仪表盘手动复制。
 
-## First-Time Setup
+## 首次设置
 
-### Option 1: Browser Authentication (Recommended)
+### 方式一：浏览器认证（推荐）
 
 ```bash
 omnara --auth
 ```
 
-This command:
-1. Starts a local HTTP server on a random port
-2. Opens your browser to `https://claude.omnara.com/cli-auth`
-3. Prompts you to sign in (or create an account)
-4. Automatically receives the API key via callback
-5. Saves the key to `~/.omnara/credentials.json`
+该命令将：
+1. 在随机端口上启动一个本地 HTTP 服务器
+2. 打开浏览器访问 `https://claude.omnara.com/cli-auth`
+3. 提示你登录（或创建账户）
+4. 通过回调自动接收 API key
+5. 将密钥保存到 `~/.omnara/credentials.json`
 
 <Tip>
-The local server only listens on `127.0.0.1` and shuts down after authentication for security.
+出于安全考虑，本地服务器仅监听 `127.0.0.1`，并在认证完成后自动关闭。
 </Tip>
 
-### Option 2: Manual API Key
+### 方式二：手动设置 API key
 
-If browser authentication doesn't work (e.g., remote SSH session):
+如果浏览器认证不可用（例如远程 SSH 会话）：
 
 <Steps>
-  <Step title="Get Your API Key">
-    1. Sign in to your account at [claude.omnara.com](https://claude.omnara.com)
-    2. Navigate to **Account → API Keys** (bottom left of dashboard)
-    3. Or visit directly: [claude.omnara.com/dashboard/api-keys](https://claude.omnara.com/dashboard/api-keys)
-    4. Click **Create API Key** or copy an existing key
+  <Step title="获取你的 API key">
+    1. 登录你在 [claude.omnara.com](https://claude.omnara.com) 的账户
+    2. 进入 **Account → API Keys**（仪表盘左下角）
+    3. 或直接访问：[claude.omnara.com/dashboard/api-keys](https://claude.omnara.com/dashboard/api-keys)
+    4. 点击 **Create API Key** 或复制已有的密钥
   </Step>
 
-  <Step title="Set the API Key">
-    Choose one method:
+  <Step title="设置 API key">
+    选择以下任一方式：
 
     <CodeGroup>
     ```bash Environment Variable
@@ -52,7 +52,7 @@ If browser authentication doesn't work (e.g., remote SSH session):
     ```
 
     ```bash Manual File
-    # Create credentials file
+    # 创建凭据文件
     mkdir -p ~/.omnara
     echo '{"write_key": "xxxxxxxxxxxxxxxxxxxx"}' > ~/.omnara/credentials.json
     chmod 600 ~/.omnara/credentials.json
@@ -61,120 +61,120 @@ If browser authentication doesn't work (e.g., remote SSH session):
   </Step>
 </Steps>
 
-## Re-authentication
+## 重新认证
 
-If your API key expires or you need to switch accounts:
+如果你的 API key 过期或需要切换账户：
 
 ```bash
 omnara --reauth
 ```
 
-This forces a new authentication flow even if credentials already exist.
+即使凭据已存在，该命令也会强制启动新的认证流程。
 
-## How It Works
+## 工作原理
 
-### Browser Authentication Flow
+### 浏览器认证流程
 
 <Steps>
-  <Step title="CLI Starts Local Server">
-    Generates a secure random `state` parameter and starts HTTP server on `127.0.0.1:random_port`
+  <Step title="CLI 启动本地服务器">
+    生成一个安全的随机 `state` 参数，并在 `127.0.0.1:random_port` 上启动 HTTP 服务器
   </Step>
 
-  <Step title="Browser Opens">
-    URL includes port and state: `https://claude.omnara.com/cli-auth?port=12345&state=abc123...`
+  <Step title="浏览器打开">
+    URL 中包含端口和 state：`https://claude.omnara.com/cli-auth?port=12345&state=abc123...`
   </Step>
 
-  <Step title="User Authenticates">
-    Signs in with Omnara account (creates account if first time)
+  <Step title="用户完成认证">
+    使用 Omnara 账户登录（首次使用时创建账户）
   </Step>
 
-  <Step title="Backend Generates API Key">
-    Server generates a JWT token with your `user_id` and returns it to the web page
+  <Step title="后端生成 API key">
+    服务器生成一个包含你的 `user_id` 的 JWT token，并将其返回给网页
   </Step>
 
-  <Step title="Callback to CLI">
-    Web page sends API key back to local CLI via:
-    - **Local sessions**: Hidden iframe to `http://127.0.0.1:{port}/?api_key={key}&state={state}`
-    - **Remote sessions**: User copies key manually
+  <Step title="回调至 CLI">
+    网页通过以下方式将 API key 发回本地 CLI：
+    - **本地会话**：通过隐藏 iframe 访问 `http://127.0.0.1:{port}/?api_key={key}&state={state}`
+    - **远程会话**：由用户手动复制密钥
   </Step>
 
-  <Step title="Key Saved">
-    CLI validates state parameter, saves key to `~/.omnara/credentials.json` with `0o600` permissions
+  <Step title="保存密钥">
+    CLI 校验 state 参数，并以 `0o600` 权限将密钥保存到 `~/.omnara/credentials.json`
   </Step>
 </Steps>
 
-## Authentication Priority
+## 认证优先级
 
-When you run a command, Omnara looks for credentials in this order:
+运行命令时，Omnara 按以下顺序查找凭据：
 
-1. **`--api-key` flag** (highest priority)
-2. **`OMNARA_API_KEY` environment variable**
-3. **`~/.omnara/credentials.json` file**
-4. **Triggers authentication** if none found
+1. **`--api-key` 标志**（最高优先级）
+2. **`OMNARA_API_KEY` 环境变量**
+3. **`~/.omnara/credentials.json` 文件**
+4. 如果均未找到，则**触发认证流程**
 
-### Example
+### 示例
 
 ```bash
-# All three set different keys
+# 三处分别设置了不同的密钥
 export OMNARA_API_KEY="env_key"
-# credentials.json contains "file_key"
+# credentials.json 中包含 "file_key"
 omnara --api-key "flag_key"
 
-# Uses "flag_key" because flags have highest priority
+# 使用 "flag_key"，因为标志的优先级最高
 ```
 
-## Storage Locations
+## 存储位置
 
-### Credentials File
+### 凭据文件
 
-**Path:** `~/.omnara/credentials.json`
+**路径：** `~/.omnara/credentials.json`
 
-**Format:**
+**格式：**
 ```json
 {
   "write_key": "xxxxxxxxxxxxxxxxxxxx"
 }
 ```
 
-**Permissions:** `0o600` (owner read/write only)
+**权限：** `0o600`（仅所有者可读写）
 
 <Warning>
-Never commit this file to version control! Add `~/.omnara/` to your `.gitignore`.
+切勿将此文件提交到版本控制！请将 `~/.omnara/` 添加到你的 `.gitignore`。
 </Warning>
 
-### Configuration File
+### 配置文件
 
-**Path:** `~/.omnara/config.json`
+**路径：** `~/.omnara/config.json`
 
-**Format:**
+**格式：**
 ```json
 {
   "default_agent": "claude"
 }
 ```
 
-**Purpose:** Non-sensitive settings (default agent, preferences)
+**用途：** 非敏感设置（默认智能体、偏好设置）
 
-## API Key Format
+## API key 格式
 
-Omnara API keys are JWT tokens with this structure:
+Omnara 的 API key 是具有以下结构的 JWT token：
 
-- **Format:** Base64-encoded JWT (no prefix)
-- **Algorithm:** RS256 (RSA with SHA-256)
-- **Claims:**
-  - `sub`: Your user ID
-  - `iat`: Issued at timestamp
-  - No expiration (valid indefinitely)
+- **格式：** Base64 编码的 JWT（无前缀）
+- **算法：** RS256（RSA 与 SHA-256）
+- **声明（Claims）：**
+  - `sub`：你的用户 ID
+  - `iat`：签发时间戳
+  - 无过期时间（永久有效）
 
 <Note>
-Omnara uses weaker RSA keys intentionally to keep API keys shorter. Keep your keys secure despite this tradeoff.
+Omnara 有意使用较弱的 RSA 密钥来缩短 API key 的长度。鉴于这一取舍，请务必妥善保管你的密钥。
 </Note>
 
-## Security Best Practices
+## 安全最佳实践
 
 <AccordionGroup>
-  <Accordion title="Use environment variables in CI/CD" icon="server">
-    Don't store credentials in CI/CD configuration files:
+  <Accordion title="在 CI/CD 中使用环境变量" icon="server">
+    不要将凭据存储在 CI/CD 配置文件中：
 
     ```yaml
     # GitHub Actions
@@ -185,137 +185,137 @@ Omnara uses weaker RSA keys intentionally to keep API keys shorter. Keep your ke
     ```
   </Accordion>
 
-  <Accordion title="Rotate keys periodically" icon="rotate">
-    Generate new API keys from your dashboard every few months:
+  <Accordion title="定期轮换密钥" icon="rotate">
+    每隔几个月从仪表盘生成新的 API key：
 
     ```bash
-    # Get new key from dashboard, then:
+    # 从仪表盘获取新密钥，然后：
     omnara --reauth
     ```
   </Accordion>
 
-  <Accordion title="Use separate keys for different environments" icon="layer-group">
-    Create multiple API keys in your dashboard:
-    - Development key
-    - Production key
-    - CI/CD key
+  <Accordion title="为不同环境使用独立密钥" icon="layer-group">
+    在仪表盘中创建多个 API key：
+    - 开发密钥
+    - 生产密钥
+    - CI/CD 密钥
 
-    This allows you to revoke specific keys without affecting others.
+    这样可以在不影响其他密钥的情况下撤销特定密钥。
   </Accordion>
 
-  <Accordion title="Never log API keys" icon="eye-slash">
-    Ensure your scripts don't accidentally log credentials:
+  <Accordion title="切勿在日志中记录 API key" icon="eye-slash">
+    确保你的脚本不会意外记录凭据：
 
     ```bash
-    # Bad: logs API key
+    # 错误做法：会记录 API key
     echo "Using key: $OMNARA_API_KEY"
 
-    # Good: logs without revealing key
+    # 正确做法：不暴露密钥
     echo "Using key: ${OMNARA_API_KEY:0:10}..."
     ```
   </Accordion>
 </AccordionGroup>
 
-## Troubleshooting
+## 故障排查
 
 <AccordionGroup>
-  <Accordion title="Browser doesn't open">
-    If `webbrowser.open()` fails:
+  <Accordion title="浏览器未打开">
+    如果 `webbrowser.open()` 失败：
 
     ```bash
     omnara --auth
-    # Copy the URL from terminal output
-    # Manually open it in your browser
+    # 从终端输出中复制 URL
+    # 手动在浏览器中打开
     ```
   </Accordion>
 
-  <Accordion title="Callback timeout">
-    If authentication times out after 5 minutes:
+  <Accordion title="回调超时">
+    如果认证在 5 分钟后超时：
 
     ```bash
-    # Try again
+    # 重试
     omnara --auth
 
-    # Or use manual method
-    # 1. Visit https://claude.omnara.com/cli-auth
-    # 2. Copy API key
-    # 3. Paste when CLI prompts
+    # 或使用手动方式
+    # 1. 访问 https://claude.omnara.com/cli-auth
+    # 2. 复制 API key
+    # 3. 在 CLI 提示时粘贴
     ```
   </Accordion>
 
-  <Accordion title="Corrupted credentials">
-    If you see JSON parsing errors:
+  <Accordion title="凭据文件损坏">
+    如果出现 JSON 解析错误：
 
     ```bash
-    # Check file contents
+    # 检查文件内容
     cat ~/.omnara/credentials.json
 
-    # If corrupt, re-authenticate
+    # 如果已损坏，重新认证
     rm ~/.omnara/credentials.json
     omnara --auth
     ```
   </Accordion>
 
-  <Accordion title="Permission denied">
-    If you can't read credentials:
+  <Accordion title="权限被拒绝">
+    如果无法读取凭据：
 
     ```bash
-    # Fix permissions
+    # 修复文件权限
     chmod 600 ~/.omnara/credentials.json
 
-    # Fix directory
+    # 修复目录权限
     chmod 700 ~/.omnara
     ```
   </Accordion>
 
-  <Accordion title="API key invalid">
-    If authentication fails with valid-looking key:
+  <Accordion title="API key 无效">
+    如果密钥看似有效但认证失败：
 
     ```bash
-    # Key may be revoked or expired
-    # Generate new key from dashboard
+    # 密钥可能已被撤销或过期
+    # 从仪表盘生成新密钥
     omnara --reauth
     ```
   </Accordion>
 </AccordionGroup>
 
-## Advanced Usage
+## 高级用法
 
-### Self-Hosted Instances
+### 自托管实例
 
-Point to your own Omnara instance:
+指向你自己的 Omnara 实例：
 
 ```bash
 omnara --auth --auth-url https://omnara.mycompany.com
 ```
 
-This uses your custom authentication URL while keeping the same flow.
+这会使用你的自定义认证 URL，同时保持相同的认证流程。
 
-### Programmatic API Key Management
+### 以编程方式管理 API key
 
-For automation, you can manage credentials programmatically:
+对于自动化场景，你可以通过编程方式管理凭据：
 
 ```python
 import json
 from pathlib import Path
 
-# Read API key
+# 读取 API key
 creds_path = Path.home() / ".omnara" / "credentials.json"
 with open(creds_path) as f:
     api_key = json.load(f)["write_key"]
 
-# Use in your scripts
+# 在你的脚本中使用
 import os
 os.environ["OMNARA_API_KEY"] = api_key
 ```
 
-## Related Documentation
+## 相关文档
 
 <CardGroup cols={2}>
-  <Card title="Environment Variables" href="/cli/environment-variables">
-    Configure Omnara with environment variables
+  <Card title="环境变量" href="/cli/environment-variables">
+    使用环境变量配置 Omnara
   </Card>
-  <Card title="Configuration Files" href="/cli/config-files">
-    Learn about all configuration files
+  <Card title="配置文件" href="/cli/config-files">
+    了解所有配置文件
   </Card>
 </CardGroup>

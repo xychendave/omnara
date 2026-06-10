@@ -1,34 +1,34 @@
 ---
-title: GitHub Actions Integration
-description: 'Run Claude Code in GitHub Actions with Omnara monitoring'
+title: GitHub Actions 集成
+description: '在 GitHub Actions 中运行 Claude Code 并通过 Omnara 监控'
 ---
 
-## Overview
+## 概述
 
-The Omnara GitHub Actions integration allows you to trigger Claude Code to run in your GitHub Actions workflows, while monitoring and interacting with it through the Omnara dashboard.
+Omnara 的 GitHub Actions 集成允许你在 GitHub Actions 工作流中触发 Claude Code 运行，同时通过 Omnara 仪表板监控并与其交互。
 
-## Key Features
+## 核心功能
 
 <CardGroup cols={2}>
-  <Card title="Remote Launch" icon="rocket">
-    Start GitHub Actions from your phone or web dashboard
+  <Card title="远程启动" icon="rocket">
+    从手机或 Web 仪表板启动 GitHub Actions
   </Card>
-  <Card title="Automatic PR Creation" icon="git-alt">
-    Claude creates branches, commits changes, and opens PRs
+  <Card title="自动创建 PR" icon="git-alt">
+    Claude 自动创建分支、提交更改并发起 PR
   </Card>
-  <Card title="Real-time Monitoring" icon="eye">
-    Track progress and provide guidance through Omnara
+  <Card title="实时监控" icon="eye">
+    通过 Omnara 跟踪进度并提供指导
   </Card>
-  <Card title="Two-way Communication" icon="comments">
-    Respond to Claude's questions from anywhere
+  <Card title="双向沟通" icon="comments">
+    随时随地回复 Claude 的提问
   </Card>
 </CardGroup>
 
-## Quick Start
+## 快速开始
 
 <Steps>
-  <Step title="Add GitHub Action">
-    Create `.github/workflows/omnara.yml`:
+  <Step title="添加 GitHub Action">
+    创建 `.github/workflows/omnara.yml`：
 
     ```yaml
     name: Omnara Claude Code
@@ -51,71 +51,71 @@ The Omnara GitHub Actions integration allows you to trigger Claude Code to run i
     ```
   </Step>
 
-  <Step title="Configure Dashboard">
-    1. Go to **Settings → Integrations** in your [dashboard](https://claude.omnara.com/dashboard)
-    2. Add GitHub Actions integration
-    3. Enter repository name (e.g., `owner/repo`)
-    4. Add GitHub token with `repo` scope
+  <Step title="配置仪表板">
+    1. 在你的[仪表板](https://claude.omnara.com/dashboard)中进入 **Settings → Integrations**
+    2. 添加 GitHub Actions 集成
+    3. 输入仓库名称（例如 `owner/repo`）
+    4. 添加具有 `repo` 权限范围的 GitHub token
   </Step>
 
-  <Step title="Trigger from Dashboard">
-    Click "Launch Agent" and select GitHub Actions to trigger Claude Code in your repository
+  <Step title="从仪表板触发">
+    点击「Launch Agent」并选择 GitHub Actions，即可在你的仓库中触发 Claude Code
   </Step>
 </Steps>
 
-## Configuration
+## 配置
 
-### Action Inputs
+### Action 输入参数
 
 <ParamField path="api-key" type="string" required>
-  Omnara API key for authentication
+  用于身份验证的 Omnara API key
 </ParamField>
 
 <ParamField path="prompt" type="string">
-  Initial prompt for Claude Code
+  Claude Code 的初始提示词
 </ParamField>
 
 <ParamField path="permission-mode" type="string">
-  Permission handling: `acceptEdits`, `bypassPermissions`, `plan`, `default`
+  权限处理方式：`acceptEdits`、`bypassPermissions`、`plan`、`default`
 </ParamField>
 
 <ParamField path="allowed-tools" type="string">
-  Comma-separated list of allowed tools
+  允许使用的工具列表（以逗号分隔）
 </ParamField>
 
 <ParamField path="branch" type="string">
-  Branch to work on (default: creates new branch)
+  要工作的分支（默认：创建新分支）
 </ParamField>
 
-### Required Secrets
+### 必需的 Secrets
 
-Add these to your repository secrets:
+将以下内容添加到你的仓库 secrets 中：
 
 ```bash
-OMNARA_API_KEY  # From omnara.com/dashboard
-GITHUB_TOKEN    # Automatically provided by GitHub Actions
+OMNARA_API_KEY  # 从 omnara.com/dashboard 获取
+GITHUB_TOKEN    # 由 GitHub Actions 自动提供
 ```
 
-## Use Cases
+## 使用场景
 
 <CardGroup cols={2}>
-  <Card title="Automated Code Reviews" icon="magnifying-glass">
-    Trigger Claude to review PRs and suggest improvements
+  <Card title="自动化代码审查" icon="magnifying-glass">
+    触发 Claude 审查 PR 并提出改进建议
   </Card>
-  <Card title="Bug Fixes" icon="bug">
-    Have Claude investigate and fix reported issues
+  <Card title="缺陷修复" icon="bug">
+    让 Claude 调查并修复已报告的问题
   </Card>
-  <Card title="Refactoring" icon="code">
-    Request code refactoring or modernization
+  <Card title="重构" icon="code">
+    请求代码重构或现代化改造
   </Card>
-  <Card title="Documentation" icon="book">
-    Generate or update documentation automatically
+  <Card title="文档" icon="book">
+    自动生成或更新文档
   </Card>
 </CardGroup>
 
-## Example Workflows
+## 工作流示例
 
-### On Issue Comment
+### 在 Issue 评论时触发
 
 ```yaml
 name: Claude Code on Demand
@@ -143,13 +143,13 @@ jobs:
           prompt: ${{ steps.command.outputs.prompt }}
 ```
 
-### Scheduled Code Maintenance
+### 定时代码维护
 
 ```yaml
 name: Weekly Maintenance
 on:
   schedule:
-    - cron: '0 0 * * 0'  # Every Sunday
+    - cron: '0 0 * * 0'  # 每周日
 
 jobs:
   maintenance:
@@ -165,25 +165,25 @@ jobs:
           permission-mode: acceptEdits
 ```
 
-## Documentation
+## 文档
 
-For complete setup instructions and advanced configuration, see the GitHub Actions integration guide in the repository:
+完整的设置说明和高级配置，请参阅仓库中的 GitHub Actions 集成指南：
 
 <Card
-  title="View GitHub Actions Integration Guide"
+  title="查看 GitHub Actions 集成指南"
   icon="github"
   href="https://github.com/omnara-ai/omnara/tree/main/src/integrations/github"
 >
-  Detailed setup, examples, and troubleshooting
+  详细的设置、示例和故障排除
 </Card>
 
-## Related Integrations
+## 相关集成
 
 <CardGroup cols={2}>
-  <Card title="CLI Integration" href="/cli/overview">
-    Run agents locally with CLI
+  <Card title="CLI 集成" href="/cli/overview">
+    使用 CLI 在本地运行智能体
   </Card>
-  <Card title="n8n Workflows" href="/integrations/n8n">
-    Add human-in-the-loop to automations
+  <Card title="n8n 工作流" href="/integrations/n8n">
+    为自动化流程添加人工介入（human-in-the-loop）能力
   </Card>
 </CardGroup>

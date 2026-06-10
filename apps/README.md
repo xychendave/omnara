@@ -1,21 +1,21 @@
 # apps/
 
-This directory contains user-facing applications for the Omnara platform.
+本目录包含 Omnara 平台面向用户的应用程序。
 
-## Structure
+## 目录结构
 
-- **`web/`** - Next.js web dashboard
-  - Main web interface for Omnara
-  - Real-time agent monitoring and interaction
-  - Built with React/Next.js and TypeScript
+- **`web/`** - Next.js 网页仪表盘
+  - Omnara 的主要网页界面
+  - 实时智能体监控与交互
+  - 基于 React/Next.js 和 TypeScript 构建
 
-- **`mobile/`** - React Native mobile app
-  - iOS/Android mobile application
-  - Real-time notifications and agent communication
-  - Available on App Store and Google Play
+- **`mobile/`** - React Native 移动应用
+  - iOS/Android 移动应用
+  - 实时通知与智能体沟通
+  - 已上架 App Store 和 Google Play
 
-- **`packages/`** - Shared frontend packages
-  - Common components and utilities
-  - Shared between web and mobile apps
+- **`packages/`** - 共享前端包
+  - 通用组件和工具
+  - 在网页和移动应用之间共享
 
-Both applications provide real-time visibility into AI agent activities and enable users to communicate with their agents from anywhere.
+这两个应用都能实时展示 AI 智能体的活动，并让用户随时随地与自己的智能体进行沟通。

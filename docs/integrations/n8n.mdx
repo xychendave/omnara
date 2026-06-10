@@ -1,74 +1,74 @@
 ---
-title: n8n Integration
-description: 'Add human-in-the-loop capabilities to your n8n workflows'
+title: n8n 集成
+description: '为你的 n8n 工作流添加人工介入（human-in-the-loop）能力'
 ---
 
-## Overview
+## 概述
 
-The Omnara n8n integration (`n8n-nodes-omnara`) enables workflows to communicate with users in real-time through the Omnara platform. Perfect for approval workflows, agent conversations, and guided automation.
+Omnara 的 n8n 集成（`n8n-nodes-omnara`）使工作流能够通过 Omnara 平台与用户进行实时沟通。非常适合审批工作流、智能体对话以及引导式自动化。
 
-**Key Capabilities:**
-- Send non-blocking status updates
-- Ask questions and wait for responses
-- AI Agent compatibility
-- Multi-channel notifications (email, SMS, push)
-- Session management
+**核心能力：**
+- 发送非阻塞的状态更新
+- 提问并等待回复
+- 兼容 AI Agent
+- 多渠道通知（邮件、短信、推送）
+- 会话管理
 
-## Installation
+## 安装
 
-Install the community node in your n8n instance:
+在你的 n8n 实例中安装该社区节点：
 
 ```bash
 npm install n8n-nodes-omnara
 ```
 
-Or via the n8n UI:
-1. Go to **Settings** → **Community Nodes**
-2. Search for `n8n-nodes-omnara`
-3. Click **Install**
+或通过 n8n 界面安装：
+1. 进入 **Settings** → **Community Nodes**
+2. 搜索 `n8n-nodes-omnara`
+3. 点击 **Install**
 
-<Card title="View on npm" icon="npm" href="https://www.npmjs.com/package/n8n-nodes-omnara">
-  Full package documentation and changelog
+<Card title="在 npm 上查看" icon="npm" href="https://www.npmjs.com/package/n8n-nodes-omnara">
+  完整的包文档和更新日志
 </Card>
 
-## Quick Start
+## 快速开始
 
 <Steps>
-  <Step title="Add Credentials">
-    1. In n8n, go to **Credentials** → **New**
-    2. Select **Omnara API**
-    3. Enter your API key from [claude.omnara.com/dashboard](https://claude.omnara.com/dashboard)
-    4. Optionally set custom server URL for self-hosted instances
+  <Step title="添加凭据">
+    1. 在 n8n 中进入 **Credentials** → **New**
+    2. 选择 **Omnara API**
+    3. 输入从 [claude.omnara.com/dashboard](https://claude.omnara.com/dashboard) 获取的 API key
+    4. 如使用自托管实例，可选填自定义服务器 URL
   </Step>
 
-  <Step title="Add Omnara Node">
-    Drag the **Omnara** node into your workflow
+  <Step title="添加 Omnara 节点">
+    将 **Omnara** 节点拖入你的工作流
   </Step>
 
-  <Step title="Configure Operation">
-    Choose an operation:
-    - **Send Message**: Non-blocking status update
-    - **Send and Wait**: Ask question and pause workflow
-    - **End Session**: Mark agent session as complete
+  <Step title="配置操作">
+    选择一个操作：
+    - **Send Message**：非阻塞的状态更新
+    - **Send and Wait**：提问并暂停工作流
+    - **End Session**：将智能体会话标记为完成
   </Step>
 
-  <Step title="Test It">
-    Execute your workflow and check the [Omnara dashboard](https://claude.omnara.com/dashboard) for messages
+  <Step title="进行测试">
+    执行你的工作流，并在 [Omnara 仪表板](https://claude.omnara.com/dashboard)中查看消息
   </Step>
 </Steps>
 
-## Operations
+## 操作
 
-### Send Message (Non-blocking)
+### Send Message（非阻塞）
 
-Send informational messages without waiting for response.
+发送信息性消息，无需等待回复。
 
-**When to use:**
-- Progress updates
-- Status notifications
-- Logging agent actions
+**适用场景：**
+- 进度更新
+- 状态通知
+- 记录智能体操作
 
-**Example:**
+**示例：**
 ```javascript
 {
   "operation": "send",
@@ -80,34 +80,34 @@ Send informational messages without waiting for response.
 }
 ```
 
-**Returns:**
-- `message_id`: ID of created message
-- `agent_instance_id`: Session identifier
-- `queued_user_messages`: Any pending user responses
+**返回值：**
+- `message_id`：所创建消息的 ID
+- `agent_instance_id`：会话标识符
+- `queued_user_messages`：所有待处理的用户回复
 
 <Tip>
-Check `queued_user_messages` on every send to catch user responses sent between operations.
+每次发送时都检查 `queued_user_messages`，以捕获用户在两次操作之间发送的回复。
 </Tip>
 
-### Send and Wait (Blocking)
+### Send and Wait（阻塞）
 
-Ask questions and pause workflow until user responds.
+提出问题并暂停工作流，直到用户回复。
 
-**When to use:**
-- Approval workflows
-- User input required
-- Decision points
+**适用场景：**
+- 审批工作流
+- 需要用户输入
+- 决策节点
 
-**Two Modes:**
+**两种模式：**
 
 <Tabs>
-  <Tab title="Webhook Mode (Default)">
-    **For regular workflows**
+  <Tab title="Webhook 模式（默认）">
+    **适用于常规工作流**
 
-    - Uses n8n's webhook system
-    - Efficient, event-driven
-    - Resumes workflow when user responds
-    - Max wait: 7 days
+    - 使用 n8n 的 webhook 系统
+    - 高效、事件驱动
+    - 用户回复后恢复工作流
+    - 最长等待时间：7 天
 
     ```javascript
     {
@@ -121,13 +121,13 @@ Ask questions and pause workflow until user responds.
     ```
   </Tab>
 
-  <Tab title="Sync Mode (AI Agents)">
-    **For AI Agent tools**
+  <Tab title="同步模式（AI Agent）">
+    **适用于 AI Agent 工具**
 
-    - Synchronous polling
-    - Works in AI Agent context
-    - Required for n8n AI Agents
-    - Max wait: 48 hours
+    - 同步轮询
+    - 可在 AI Agent 上下文中工作
+    - n8n AI Agent 必须使用此模式
+    - 最长等待时间：48 小时
 
     ```javascript
     {
@@ -135,21 +135,21 @@ Ask questions and pause workflow until user responds.
       "message": "Should I proceed with this change?",
       "options": {
         "syncMode": true,
-        "syncTimeout": 600,  // 10 minutes
-        "pollInterval": 5     // Check every 5 seconds
+        "syncTimeout": 600,  // 10 分钟
+        "pollInterval": 5     // 每 5 秒检查一次
       }
     }
     ```
 
     <Warning>
-    **Must use `syncMode: true` for AI Agents**. Regular webhook mode doesn't work in AI Agent context.
+    **AI Agent 必须使用 `syncMode: true`**。常规 webhook 模式在 AI Agent 上下文中无法工作。
     </Warning>
   </Tab>
 </Tabs>
 
 ### End Session
 
-Mark agent session as completed.
+将智能体会话标记为已完成。
 
 ```javascript
 {
@@ -158,9 +158,9 @@ Mark agent session as completed.
 }
 ```
 
-## Configuration Examples
+## 配置示例
 
-### Simple Approval Workflow
+### 简单的审批工作流
 
 ```javascript
 {
@@ -199,7 +199,7 @@ Mark agent session as completed.
 }
 ```
 
-### AI Agent Integration
+### AI Agent 集成
 
 ```javascript
 {
@@ -219,7 +219,7 @@ Mark agent session as completed.
         "operation": "sendAndWait",
         "message": "{{ $json.question }}",
         "options": {
-          "syncMode": true,        // Required for AI Agents
+          "syncMode": true,        // AI Agent 必需
           "syncTimeout": 600,
           "pollInterval": 5,
           "sendEmail": true
@@ -230,64 +230,64 @@ Mark agent session as completed.
 }
 ```
 
-## Agent Instance Management
+## 智能体实例管理
 
-### Session Tracking
+### 会话跟踪
 
-Each workflow execution should use a consistent `agent_instance_id`:
+每次工作流执行应使用一致的 `agent_instance_id`：
 
-**Pattern 1: Webhook-triggered (Recommended)**
+**模式 1：Webhook 触发（推荐）**
 ```javascript
-// Omnara dashboard triggers workflow with pre-generated ID
+// Omnara 仪表板使用预生成的 ID 触发工作流
 {
-  "agent_instance_id": "{{ $json.agent_instance_id }}", // From webhook
+  "agent_instance_id": "{{ $json.agent_instance_id }}", // 来自 webhook
   "agent_type": "{{ $json.agent_type }}"
 }
 ```
 
-**Pattern 2: Self-generated**
+**模式 2：自行生成**
 ```javascript
-// Generate UUID in Set node
+// 在 Set 节点中生成 UUID
 {
   "agent_instance_id": "{{ $uuid() }}",
   "agent_type": "My Workflow"
 }
-// Reference in all subsequent Omnara nodes
+// 在所有后续 Omnara 节点中引用
 ```
 
-### Queued Messages
+### 排队消息
 
-Omnara returns queued user messages with every agent message:
+Omnara 在每条智能体消息中都会返回排队的用户消息：
 
 ```javascript
 const response = await omnaraNode.execute();
-// response.queued_user_messages contains any user responses since last check
+// response.queued_user_messages 包含自上次检查以来的所有用户回复
 ```
 
-This ensures you never miss user input, even if timing is off.
+这确保你不会错过任何用户输入，即使时机不凑巧也没关系。
 
-## Notifications
+## 通知
 
-Control how users are notified:
+控制如何通知用户：
 
 <ParamField path="sendEmail" type="boolean" default="false">
-  Send email notification
+  发送邮件通知
 </ParamField>
 
 <ParamField path="sendSMS" type="boolean" default="false">
-  Send SMS notification (requires phone verification)
+  发送短信通知（需要完成手机号验证）
 </ParamField>
 
 <ParamField path="sendPush" type="boolean" default="false">
-  Send push notification (via mobile app or web push)
+  发送推送通知（通过移动应用或网页推送）
 </ParamField>
 
-**Priority:**
-1. Message-level override (in request)
-2. User preferences (in dashboard)
-3. Default: no notifications
+**优先级：**
+1. 消息级覆盖（在请求中指定）
+2. 用户偏好设置（在仪表板中配置）
+3. 默认：不发送通知
 
-## Error Handling
+## 错误处理
 
 ```javascript
 {
@@ -305,7 +305,7 @@ Control how users are notified:
 }
 ```
 
-With `continueOnFail: true`, errors are returned as data:
+设置 `continueOnFail: true` 后，错误会以数据形式返回：
 
 ```javascript
 {
@@ -316,34 +316,34 @@ With `continueOnFail: true`, errors are returned as data:
 }
 ```
 
-## Troubleshooting
+## 故障排除
 
 <AccordionGroup>
-  <Accordion title="Webhook not resuming workflow">
-    **Causes:**
-    - Using sync mode in regular workflow (use webhook mode)
-    - Webhook URL incorrect in message metadata
-    - Workflow execution already timed out
+  <Accordion title="Webhook 未恢复工作流">
+    **原因：**
+    - 在常规工作流中使用了同步模式（应使用 webhook 模式）
+    - 消息元数据中的 webhook URL 不正确
+    - 工作流执行已经超时
 
-    **Fix:**
+    **修复：**
     ```javascript
-    // Ensure sync mode is false (or omitted) for regular workflows
+    // 在常规工作流中确保 sync 模式为 false（或不设置）
     {
       "options": {
-        "syncMode": false  // or omit entirely
+        "syncMode": false  // 或完全省略
       }
     }
     ```
   </Accordion>
 
-  <Accordion title="AI Agent tool not working">
-    **Causes:**
-    - Missing `syncMode: true`
-    - Using webhook mode in AI Agent context
+  <Accordion title="AI Agent 工具不起作用">
+    **原因：**
+    - 缺少 `syncMode: true`
+    - 在 AI Agent 上下文中使用了 webhook 模式
 
-    **Fix:**
+    **修复：**
     ```javascript
-    // MUST use sync mode for AI Agents
+    // AI Agent 必须使用同步模式
     {
       "options": {
         "syncMode": true,
@@ -354,83 +354,83 @@ With `continueOnFail: true`, errors are returned as data:
     ```
   </Accordion>
 
-  <Accordion title="Messages not appearing in dashboard">
-    **Causes:**
-    - Incorrect API key
-    - Wrong server URL
-    - Network/firewall issues
+  <Accordion title="消息未出现在仪表板中">
+    **原因：**
+    - API key 不正确
+    - 服务器 URL 错误
+    - 网络/防火墙问题
 
-    **Fix:**
-    1. Test credentials: Check credential test passes
-    2. Verify server URL (default: `https://agent.omnara.com`)
-    3. Check n8n logs for error details
+    **修复：**
+    1. 测试凭据：确认凭据测试通过
+    2. 验证服务器 URL（默认值：`https://agent.omnara.com`）
+    3. 查看 n8n 日志获取错误详情
   </Accordion>
 
-  <Accordion title="Timeout waiting for response">
-    **Causes:**
-    - User didn't respond in time
-    - Poll interval too long
-    - Sync timeout too short
+  <Accordion title="等待回复超时">
+    **原因：**
+    - 用户未在规定时间内回复
+    - 轮询间隔过长
+    - 同步超时时间过短
 
-    **Fix:**
+    **修复：**
     ```javascript
-    // Adjust timeouts
+    // 调整超时设置
     {
       "limitWaitTime": true,
-      "resumeAmount": 2,       // 2 hours instead of 1
+      "resumeAmount": 2,       // 改为 2 小时而不是 1 小时
       "resumeUnit": "hours",
       "options": {
-        "syncTimeout": 1200,   // 20 minutes
-        "pollInterval": 3      // Check every 3 seconds
+        "syncTimeout": 1200,   // 20 分钟
+        "pollInterval": 3      // 每 3 秒检查一次
       }
     }
     ```
   </Accordion>
 </AccordionGroup>
 
-## API Endpoints
+## API 端点
 
-The n8n node uses these Omnara API endpoints:
+n8n 节点使用以下 Omnara API 端点：
 
-| Endpoint | Method | Purpose |
+| 端点 | 方法 | 用途 |
 |----------|--------|---------|
-| `/api/v1/messages/agent` | POST | Send message (both send & sendAndWait) |
-| `/api/v1/messages/pending` | GET | Poll for user responses (sync mode) |
-| `/api/v1/sessions/end` | POST | End agent session |
-| `/api/v1/auth/verify` | GET | Validate credentials |
+| `/api/v1/messages/agent` | POST | 发送消息（send 与 sendAndWait 共用） |
+| `/api/v1/messages/pending` | GET | 轮询用户回复（同步模式） |
+| `/api/v1/sessions/end` | POST | 结束智能体会话 |
+| `/api/v1/auth/verify` | GET | 验证凭据 |
 
-## Best Practices
+## 最佳实践
 
 <AccordionGroup>
-  <Accordion title="Use descriptive agent types" icon="tag">
+  <Accordion title="使用具有描述性的智能体类型" icon="tag">
     ```javascript
-    // Good
+    // 好的写法
     agentType: "Deployment Bot - Production"
 
-    // Bad
+    // 不好的写法
     agentType: "Bot"
     ```
 
-    Helps identify sessions in dashboard when running multiple workflows.
+    在运行多个工作流时，有助于在仪表板中识别会话。
   </Accordion>
 
-  <Accordion title="Set appropriate timeouts" icon="clock">
+  <Accordion title="设置合适的超时时间" icon="clock">
     ```javascript
-    // For urgent approvals
+    // 用于紧急审批
     resumeAmount: 30
     resumeUnit: "minutes"
 
-    // For non-urgent requests
+    // 用于非紧急请求
     resumeAmount: 24
     resumeUnit: "hours"
     ```
 
-    Balance between user convenience and workflow efficiency.
+    在用户便利性和工作流效率之间取得平衡。
   </Accordion>
 
-  <Accordion title="Always end sessions" icon="check">
+  <Accordion title="始终结束会话" icon="check">
     ```javascript
-    // Add at end of workflow
+    // 添加到工作流末尾
     {
       "name": "End Session",
       "operation": "endSession",
@@ -438,37 +438,37 @@ The n8n node uses these Omnara API endpoints:
     }
     ```
 
-    Keeps dashboard clean and marks sessions as complete.
+    保持仪表板整洁，并将会话标记为完成。
   </Accordion>
 
-  <Accordion title="Handle queued messages" icon="inbox">
+  <Accordion title="处理排队消息" icon="inbox">
     ```javascript
-    // Check for user responses on every send
+    // 每次发送时都检查用户回复
     const response = await omnaraNode.send(message);
     if (response.queued_user_messages.length > 0) {
-      // Process user feedback
+      // 处理用户反馈
       const userMessage = response.queued_user_messages[0];
       console.log('User said:', userMessage.content);
     }
     ```
 
-    Ensures you don't miss user input sent between operations.
+    确保不会错过用户在两次操作之间发送的输入。
   </Accordion>
 </AccordionGroup>
 
-## Related Documentation
+## 相关文档
 
 <CardGroup cols={2}>
   <Card title="GitHub Actions" href="/integrations/github-actions">
-    Integrate with GitHub workflows
+    与 GitHub 工作流集成
   </Card>
   <Card title="Python SDK" href="/api/sdk">
-    Build custom integrations
+    构建自定义集成
   </Card>
   <Card title="REST API" href="/api/overview">
-    Direct API access
+    直接访问 API
   </Card>
-  <Card title="MCP Integration" href="/integrations/mcp-clients">
-    Connect with MCP clients
+  <Card title="MCP 集成" href="/integrations/mcp-clients">
+    连接 MCP 客户端
   </Card>
 </CardGroup>

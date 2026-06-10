@@ -1,9 +1,9 @@
 ---
-title: CLI Overview
-description: 'Command-line interface for Omnara agent integration'
+title: CLI 概览
+description: '用于 Omnara 智能体集成的命令行界面'
 ---
 
-## Installation
+## 安装
 
 <CodeGroup>
 
@@ -25,7 +25,7 @@ brew install omnara
 
 </CodeGroup>
 
-## Available Commands
+## 可用命令
 
 <CardGroup cols={2}>
   <Card
@@ -33,91 +33,91 @@ brew install omnara
     icon="terminal"
     href="/cli/commands/default"
   >
-    Start an interactive AI coding agent session
+    启动交互式 AI 编码智能体会话
   </Card>
   <Card
     title="omnara terminal"
     icon="desktop"
     href="/cli/commands/terminal"
   >
-    Launch with WebSocket relay streaming (explicit)
+    以 WebSocket 中继流式传输方式启动（显式）
   </Card>
   <Card
     title="omnara headless"
     icon="ghost"
     href="/cli/commands/headless"
   >
-    Run Claude Code in background mode
+    以后台模式运行 Claude Code
   </Card>
   <Card
     title="omnara serve"
     icon="server"
     href="/cli/commands/serve"
   >
-    Start webhook server for remote triggering
+    启动用于远程触发的 webhook 服务器
   </Card>
   <Card
     title="omnara mcp"
     icon="plug"
     href="/cli/commands/mcp"
   >
-    Run MCP stdio server for protocol integrations
+    运行用于协议集成的 MCP stdio 服务器
   </Card>
 </CardGroup>
 
-## Quick Examples
+## 快速示例
 
 <CodeGroup>
 
 ```bash Claude Code
-# Start Claude Code with dashboard integration
+# 启动带有仪表盘集成的 Claude Code
 omnara
 ```
 
 ```bash Codex
-# Start Codex with custom name
+# 以自定义名称启动 Codex
 omnara --agent codex --name "Backend Refactor"
 ```
 
 ```bash Headless
-# Run Claude Code in background with auto-accept
+# 以后台模式运行 Claude Code 并自动接受编辑
 omnara headless --permission-mode acceptEdits
 ```
 
 ```bash Webhook Server
-# Start webhook server with public URL
+# 启动带有公开 URL 的 webhook 服务器
 omnara serve
 ```
 
 </CodeGroup>
 
-## Global Options
+## 全局选项
 
-These options work across all commands:
+以下选项适用于所有命令：
 
-| Option | Description |
+| 选项 | 描述 |
 |--------|-------------|
-| `--api-key <key>` | API key for authentication |
-| `--auth` | Authenticate or re-authenticate |
-| `--reauth` | Force re-authentication |
-| `--version` | Show version information |
-| `--base-url <url>` | Custom API server URL |
+| `--api-key <key>` | 用于身份验证的 API key |
+| `--auth` | 进行身份验证或重新验证 |
+| `--reauth` | 强制重新进行身份验证 |
+| `--version` | 显示版本信息 |
+| `--base-url <url>` | 自定义 API 服务器 URL |
 
-## Next Steps
+## 后续步骤
 
 <CardGroup cols={2}>
   <Card
-    title="Authentication"
+    title="身份验证"
     icon="key"
     href="/authentication"
   >
-    Set up your API key and credentials
+    设置你的 API key 和凭据
   </Card>
   <Card
-    title="Agent Configuration"
+    title="智能体配置"
     icon="gear"
     href="/cli/agents"
   >
-    Configure default agents and preferences
+    配置默认智能体和偏好设置
   </Card>
 </CardGroup>

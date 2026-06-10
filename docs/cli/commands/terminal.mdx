@@ -1,326 +1,326 @@
 ---
 title: omnara terminal
-description: 'Launch interactive terminal sessions with WebSocket relay streaming'
+description: '启动支持 WebSocket 中继流式传输的交互式终端会话'
 ---
 
-## Usage
+## 用法
 
 ```bash
 omnara terminal [OPTIONS] [AGENT_FLAGS]
 ```
 
-Starts an AI coding agent with WebSocket relay streaming enabled.
+启动一个启用了 WebSocket 中继流式传输的 AI 编码代理。
 
-**Agent Flag Pass-through**: Any flags specific to your chosen agent (Claude Code, Codex, Amp) are automatically passed to the underlying agent CLI. This allows you to use native agent features while maintaining Omnara integration.
+**代理标志透传**：所选代理（Claude Code、Codex、Amp）特有的所有标志都会自动传递给底层代理 CLI。这让你在保持 Omnara 集成的同时使用代理的原生功能。
 
-## Options
+## 选项
 
-All options from the default command are supported:
+支持默认命令的所有选项：
 
 <ParamField path="--agent" type="string" default="claude">
-  Choose which agent to use: `claude`, `codex`, or `amp`
+  选择要使用的代理：`claude`、`codex` 或 `amp`
 </ParamField>
 
 <ParamField path="--name" type="string">
-  Custom display name for the dashboard
+  仪表板中显示的自定义名称
 </ParamField>
 
 <ParamField path="--api-key" type="string">
-  API key for authentication
+  用于身份验证的 API key
 </ParamField>
 
 <ParamField path="--agent-instance-id" type="string">
-  Resume an existing session
+  恢复现有会话
 </ParamField>
 
 <ParamField path="--relay-url" type="string">
-  Custom relay WebSocket URL
+  自定义中继 WebSocket URL
 
-  **Defaults:**
-  - Production: `wss://relay.omnara.com/agent`
-  - Local dev: `ws://localhost:8080/agent`
+  **默认值：**
+  - 生产环境：`wss://relay.omnara.com/agent`
+  - 本地开发：`ws://localhost:8080/agent`
 </ParamField>
 
 <ParamField path="--base-url" type="string" default="https://agent.omnara.com">
-  Omnara API server URL
+  Omnara API 服务器 URL
 </ParamField>
 
 <Note>
-**Agent Flag Compatibility**: All agent-specific CLI flags are passed through to the underlying agent:
-- **Claude Code**: `--continue`, `--permission-mode`, `--allowed-tools`, `--dangerously-skip-permissions`, etc.
-- **Codex**: Any Codex-specific flags
-- **Amp**: Any Amp-specific flags
+**代理标志兼容性**：所有代理特有的 CLI 标志都会透传给底层代理：
+- **Claude Code**：`--continue`、`--permission-mode`、`--allowed-tools`、`--dangerously-skip-permissions` 等
+- **Codex**：任何 Codex 特有的标志
+- **Amp**：任何 Amp 特有的标志
 
-This preserves full agent functionality while adding Omnara's dashboard integration.
+这样既保留了代理的完整功能，又增加了 Omnara 的仪表板集成。
 </Note>
 
-## Examples
+## 示例
 
 <CodeGroup>
 
 ```bash Basic
-# Start with relay streaming (explicit)
+# 启动并启用中继流式传输（显式）
 omnara terminal
 ```
 
 ```bash Named Session
-# Launch Codex with custom name
+# 以自定义名称启动 Codex
 omnara terminal --agent codex --name "Feature Development"
 ```
 
 ```bash Custom Relay
-# Use custom relay server
+# 使用自定义中继服务器
 omnara terminal --relay-url wss://relay.mycompany.com/agent
 ```
 
 ```bash Resume Session
-# Continue existing session
+# 继续现有会话
 omnara terminal --agent-instance-id abc-123-def
 ```
 
 ```bash Claude Code Flags
-# Use any Claude Code flags
+# 使用任意 Claude Code 标志
 omnara terminal --permission-mode plan --allowed-tools Read,Write,Bash
 
-# Continue previous Claude session
+# 继续之前的 Claude 会话
 omnara terminal --continue
 
-# Combine Omnara and Claude flags
+# 组合使用 Omnara 和 Claude 的标志
 omnara terminal --name "Code Review" --permission-mode acceptEdits
 ```
 
 ```bash Codex Flags
-# Use Codex with its native flags
+# 使用 Codex 及其原生标志
 omnara terminal --agent codex [CODEX_FLAGS]
 ```
 
 ```bash Amp Flags
-# Use Amp with its native flags
+# 使用 Amp 及其原生标志
 omnara terminal --agent amp [AMP_FLAGS]
 ```
 
 </CodeGroup>
 
 <Tip>
-**Examples of agent flags:**
-- **Claude Code**: `--continue`, `--permission-mode`, `--allowed-tools`, `--disallowed-tools`, `--dangerously-skip-permissions`
-- **Codex**: Any Codex-specific configuration flags
-- **Amp**: Any Amp-specific configuration flags
+**代理标志示例：**
+- **Claude Code**：`--continue`、`--permission-mode`、`--allowed-tools`、`--disallowed-tools`、`--dangerously-skip-permissions`
+- **Codex**：任何 Codex 特有的配置标志
+- **Amp**：任何 Amp 特有的配置标志
 
-All agent flags are automatically passed through to maintain full native functionality.
+所有代理标志都会自动透传，以保持完整的原生功能。
 </Tip>
 
-## What is WebSocket Relay?
+## 什么是 WebSocket 中继？
 
-The relay system streams your terminal I/O in real-time to the Omnara dashboard, enabling:
+中继系统将你的终端 I/O 实时流式传输到 Omnara 仪表板，从而实现：
 
-- **Live Terminal Viewing**: See exactly what's happening in the terminal from web/mobile
-- **Remote Input**: Type messages from the dashboard that appear in the terminal
-- **Session Sharing**: Share terminal sessions with teammates
-- **Multi-device Access**: Monitor from phone, control from laptop
+- **实时终端查看**：从网页/移动端准确查看终端中正在发生的一切
+- **远程输入**：在仪表板上输入消息并显示在终端中
+- **会话共享**：与队友共享终端会话
+- **多设备访问**：用手机监控，用笔记本电脑控制
 
-## How It Works
+## 工作原理
 
 <Steps>
-  <Step title="Agent Registration">
-    CLI registers the agent instance with Omnara API
+  <Step title="代理注册">
+    CLI 向 Omnara API 注册代理实例
   </Step>
 
-  <Step title="WebSocket Connection">
-    Connects to relay server at configured URL with API key authentication
+  <Step title="WebSocket 连接">
+    使用 API key 身份验证连接到配置 URL 上的中继服务器
   </Step>
 
-  <Step title="PTY Creation">
-    Creates a pseudo-terminal (PTY) and launches the agent
+  <Step title="PTY 创建">
+    创建伪终端（PTY）并启动代理
   </Step>
 
-  <Step title="Bidirectional Streaming">
-    Streams terminal I/O over WebSocket:
-    - **Terminal → Dashboard**: Real-time output display
-    - **Dashboard → Terminal**: User input from web/mobile
+  <Step title="双向流式传输">
+    通过 WebSocket 流式传输终端 I/O：
+    - **终端 → 仪表板**：实时显示输出
+    - **仪表板 → 终端**：来自网页/移动端的用户输入
   </Step>
 
-  <Step title="Session Persistence">
-    Terminal history buffered and replayed when viewing from new devices
+  <Step title="会话持久化">
+    终端历史记录会被缓冲，并在从新设备查看时重放
   </Step>
 </Steps>
 
-## Relay vs Local-Only
+## 中继模式 vs 仅本地模式
 
 <Tabs>
-  <Tab title="With Relay (terminal)">
+  <Tab title="使用中继（terminal）">
     ```bash
     omnara terminal
-    # or simply: omnara
+    # 或者直接使用：omnara
     ```
 
-    **Features:**
-    - ✓ Real-time terminal streaming
-    - ✓ Dashboard shows live terminal output
-    - ✓ Input from web/mobile
-    - ✓ Session sharing
-    - ✓ Multi-device monitoring
-    - ✓ Message API active
+    **功能：**
+    - ✓ 实时终端流式传输
+    - ✓ 仪表板显示实时终端输出
+    - ✓ 支持来自网页/移动端的输入
+    - ✓ 会话共享
+    - ✓ 多设备监控
+    - ✓ 消息 API 处于激活状态
   </Tab>
 
-  <Tab title="Without Relay (--no-relay)">
+  <Tab title="不使用中继（--no-relay）">
     ```bash
     omnara --no-relay
     ```
 
-    **Features:**
-    - ✗ No terminal streaming
-    - ✗ Dashboard shows messages only
-    - ✗ No input from web/mobile
-    - ✗ No session sharing
-    - ✗ Terminal-only access
-    - ✓ Message API still active
+    **功能：**
+    - ✗ 无终端流式传输
+    - ✗ 仪表板仅显示消息
+    - ✗ 不支持来自网页/移动端的输入
+    - ✗ 无会话共享
+    - ✗ 仅可通过终端访问
+    - ✓ 消息 API 仍处于激活状态
 
-    **When to use:**
-    - Sensitive codebases (no terminal streaming)
-    - Offline development
-    - Reduce bandwidth usage
+    **适用场景：**
+    - 敏感代码库（不进行终端流式传输）
+    - 离线开发
+    - 减少带宽占用
   </Tab>
 </Tabs>
 
-## Terminal Frame Protocol
+## 终端帧协议
 
-The relay uses a binary frame protocol for efficient streaming:
+中继使用二进制帧协议实现高效的流式传输：
 
-| Frame Type | ID | Purpose |
+| 帧类型 | ID | 用途 |
 |------------|-----|---------|
-| OUTPUT | 0 | Terminal output to dashboard |
-| INPUT | 1 | User input from dashboard |
-| RESIZE | 2 | Window resize events |
-| METADATA | 3 | Agent metadata (type, name) |
+| OUTPUT | 0 | 发送到仪表板的终端输出 |
+| INPUT | 1 | 来自仪表板的用户输入 |
+| RESIZE | 2 | 窗口大小调整事件 |
+| METADATA | 3 | 代理元数据（类型、名称） |
 
-**Frame Structure:**
+**帧结构：**
 ```
 [Type: 1 byte][Length: 4 bytes][Payload: variable]
 ```
 
-This protocol ensures efficient, low-latency terminal streaming.
+该协议确保了高效、低延迟的终端流式传输。
 
-## Special Features
+## 特殊功能
 
-### History Replay
+### 历史记录重放
 
-When you open the dashboard:
-- Buffered terminal history is replayed
-- Special handling for Codex (strips clear screen sequences)
-- Seamless catch-up to current state
+当你打开仪表板时：
+- 重放缓冲的终端历史记录
+- 对 Codex 进行特殊处理（去除清屏序列）
+- 无缝同步到当前状态
 
-### Resize Handling
+### 窗口大小调整处理
 
-Terminal resizes are handled intelligently:
-- **Debouncing**: Waits 500ms before applying resize
-- **Gradual Resizing**: Step-by-step changes for large differences
-- **Cursor Tracking**: Detects and adjusts cursor position reports
+终端大小调整会被智能处理：
+- **防抖动**：等待 500ms 后再应用大小调整
+- **渐进式调整**：对于较大的差异分步进行变更
+- **光标跟踪**：检测并调整光标位置报告
 
-Prevents display corruption in TUI applications.
+防止 TUI 应用出现显示错乱。
 
-### Reconnection
+### 重新连接
 
-If the WebSocket connection drops:
-- Automatic reconnection every 5 seconds
-- Session persists across reconnections
-- No data loss during disconnection
+如果 WebSocket 连接断开：
+- 每 5 秒自动重新连接
+- 会话在重连期间保持不变
+- 断开连接期间不会丢失数据
 
-## Relay Server Architecture
+## 中继服务器架构
 
-The relay server (`relay.omnara.com`):
-- Runs independently from API server
-- Handles WebSocket connections
-- Buffers terminal history
-- Routes messages between terminal and dashboard clients
-- Supports multiple simultaneous viewers
+中继服务器（`relay.omnara.com`）：
+- 独立于 API 服务器运行
+- 处理 WebSocket 连接
+- 缓冲终端历史记录
+- 在终端和仪表板客户端之间路由消息
+- 支持多个查看者同时在线
 
-## Security
+## 安全性
 
-### Authentication
+### 身份验证
 
-WebSocket connections authenticated via:
-- `X-API-Key` header
-- `Authorization: Bearer {token}` header
-- WebSocket subprotocol: `omnara-key.{key}` or `omnara-supabase.{token}`
+WebSocket 连接通过以下方式进行身份验证：
+- `X-API-Key` 请求头
+- `Authorization: Bearer {token}` 请求头
+- WebSocket 子协议：`omnara-key.{key}` 或 `omnara-supabase.{token}`
 
-### Encryption
+### 加密
 
-- Production: WSS (WebSocket Secure) over TLS
-- All terminal data encrypted in transit
-- No terminal data stored long-term (only buffered in memory)
+- 生产环境：基于 TLS 的 WSS（WebSocket Secure）
+- 所有终端数据在传输过程中均加密
+- 不长期存储终端数据（仅在内存中缓冲）
 
-### Access Control
+### 访问控制
 
-- Only authenticated users can view their own sessions
-- Session ownership validated on join
-- No cross-user session access
+- 只有经过身份验证的用户才能查看自己的会话
+- 加入会话时验证会话所有权
+- 不允许跨用户访问会话
 
-## Use Cases
+## 使用场景
 
 <CardGroup cols={2}>
-  <Card title="Remote Monitoring" icon="eye">
-    Monitor agent progress from your phone while away from desk
+  <Card title="远程监控" icon="eye">
+    离开办公桌时通过手机监控代理进度
   </Card>
-  <Card title="Pair Programming" icon="users">
-    Share terminal session with teammate for collaboration
+  <Card title="结对编程" icon="users">
+    与队友共享终端会话进行协作
   </Card>
-  <Card title="Debugging" icon="bug">
-    Review terminal history to debug agent behavior
+  <Card title="调试" icon="bug">
+    查看终端历史记录以调试代理行为
   </Card>
-  <Card title="Multi-device Workflow" icon="devices">
-    Start on laptop, monitor from phone, resume on desktop
+  <Card title="多设备工作流" icon="devices">
+    在笔记本电脑上开始，用手机监控，在台式机上继续
   </Card>
 </CardGroup>
 
-## Troubleshooting
+## 故障排查
 
 <AccordionGroup>
-  <Accordion title="Relay connection fails">
-    **Check:**
-    - Network/firewall allows WebSocket connections
-    - API key is valid: `omnara --auth`
-    - Relay URL is correct
+  <Accordion title="中继连接失败">
+    **检查：**
+    - 网络/防火墙允许 WebSocket 连接
+    - API key 有效：`omnara --auth`
+    - 中继 URL 正确
 
-    **Test manually:**
+    **手动测试：**
     ```bash
-    # Try with custom relay URL
+    # 尝试使用自定义中继 URL
     omnara terminal --relay-url wss://relay.omnara.com/agent
     ```
   </Accordion>
 
-  <Accordion title="Terminal not appearing in dashboard">
-    **Causes:**
-    - Using `--no-relay` flag
-    - WebSocket connection dropped
-    - Dashboard not refreshed
+  <Accordion title="终端未在仪表板中显示">
+    **原因：**
+    - 使用了 `--no-relay` 标志
+    - WebSocket 连接已断开
+    - 仪表板未刷新
 
-    **Fix:**
-    1. Ensure not using `--no-relay`
-    2. Check logs: `~/.omnara/<agent>_wrapper/<session-id>.log`
-    3. Refresh dashboard
+    **解决方法：**
+    1. 确保未使用 `--no-relay`
+    2. 检查日志：`~/.omnara/<agent>_wrapper/<session-id>.log`
+    3. 刷新仪表板
   </Accordion>
 
-  <Accordion title="Input from dashboard not working">
-    **Causes:**
-    - One-way connection only
-    - Agent has exited or crashed
-    - Relay server issues
+  <Accordion title="仪表板的输入不起作用">
+    **原因：**
+    - 连接仅为单向
+    - 代理已退出或崩溃
+    - 中继服务器故障
 
-    **Fix:**
-    - Check agent is still running in terminal
-    - Try restarting the session
-    - Check relay server status
+    **解决方法：**
+    - 检查代理是否仍在终端中运行
+    - 尝试重新启动会话
+    - 检查中继服务器状态
   </Accordion>
 </AccordionGroup>
 
-## Related Commands
+## 相关命令
 
 <CardGroup cols={2}>
-  <Card title="omnara (default)" href="/cli/commands/default">
-    Same functionality, shorter command
+  <Card title="omnara（默认）" href="/cli/commands/default">
+    功能相同，命令更短
   </Card>
   <Card title="omnara headless" href="/cli/commands/headless">
-    Background mode without terminal
+    无终端的后台模式
   </Card>
 </CardGroup>

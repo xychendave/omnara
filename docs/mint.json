@@ -1,7 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Omnara Documentation",
-
+  "name": "Omnara 文档",
   "favicon": "/assets/favicon.png",
   "colors": {
     "primary": "#f59e0b",
@@ -14,29 +13,29 @@
   },
   "topbarLinks": [
     {
-      "name": "Website",
+      "name": "官网",
       "url": "https://claude.omnara.com"
     },
     {
-      "name": "Dashboard",
+      "name": "控制台",
       "url": "https://claude.omnara.com/dashboard"
     }
   ],
   "topbarCtaButton": {
-    "name": "Get Started",
+    "name": "开始使用",
     "url": "https://claude.omnara.com"
   },
   "tabs": [
     {
-      "name": "CLI Reference",
+      "name": "CLI 参考",
       "url": "cli"
     },
     {
-      "name": "Integrations",
+      "name": "集成",
       "url": "integrations"
     },
     {
-      "name": "API Reference",
+      "name": "API 参考",
       "url": "api"
     }
   ],
@@ -49,7 +48,7 @@
   ],
   "navigation": [
     {
-      "group": "Getting Started",
+      "group": "快速入门",
       "pages": [
         "introduction",
         "quickstart",
@@ -57,7 +56,7 @@
       ]
     },
     {
-      "group": "CLI Commands",
+      "group": "CLI 命令",
       "pages": [
         "cli/overview",
         "cli/commands/default",
@@ -68,7 +67,7 @@
       ]
     },
     {
-      "group": "CLI Configuration",
+      "group": "CLI 配置",
       "pages": [
         "cli/agents",
         "cli/environment-variables",
@@ -76,7 +75,7 @@
       ]
     },
     {
-      "group": "Integrations",
+      "group": "集成",
       "pages": [
         "integrations/n8n",
         "integrations/github-actions",
@@ -84,7 +83,7 @@
       ]
     },
     {
-      "group": "API Documentation",
+      "group": "API 文档",
       "pages": [
         "api/overview",
         "api/authentication",
@@ -103,6 +102,6 @@
     }
   },
   "search": {
-    "prompt": "Search Omnara documentation..."
+    "prompt": "搜索 Omnara 文档…"
   }
 }

@@ -1,91 +1,91 @@
 ---
-title: Configuration Files
-description: 'Omnara CLI configuration file locations and formats'
+title: 配置文件
+description: 'Omnara CLI 配置文件的位置和格式'
 ---
 
-## Configuration Directory
+## 配置目录
 
-All Omnara configuration files are stored in:
+所有 Omnara 配置文件都存储在：
 
 ```
 ~/.omnara/
 ```
 
-This directory is created automatically on first run with secure permissions (`0o700` - owner only).
+该目录在首次运行时自动创建，并使用安全权限（`0o700`——仅所有者可访问）。
 
 ## credentials.json
 
-**Location:** `~/.omnara/credentials.json`
+**位置：** `~/.omnara/credentials.json`
 
-**Purpose:** Stores authentication credentials (API keys)
+**用途：** 存储身份验证凭据（API key）
 
-**Format:**
+**格式：**
 ```json
 {
   "write_key": "xxxxxxxxxxxxxxxxxxxx"
 }
 ```
 
-**Permissions:** `0o600` (read/write for owner only)
+**权限：** `0o600`（仅所有者可读写）
 
-### How It's Created
+### 创建方式
 
-The API key is automatically saved when you authenticate:
+当你进行身份验证时，API key 会被自动保存：
 
 ```bash
 omnara --auth
 ```
 
-The browser authentication flow saves the key to this file.
+浏览器身份验证流程会将密钥保存到此文件。
 
-### Manual Management
+### 手动管理
 
-You can also set the API key manually:
+你也可以手动设置 API key：
 
 ```bash
-# Using jq
+# 使用 jq
 echo '{"write_key": "YOUR_KEY_HERE"}' | jq > ~/.omnara/credentials.json
 
-# Or edit directly
+# 或直接编辑
 nano ~/.omnara/credentials.json
 ```
 
 <Warning>
-Keep this file secure! It contains your authentication credentials. Never commit it to version control.
+请妥善保管此文件！它包含你的身份验证凭据。切勿将其提交到版本控制系统。
 </Warning>
 
 ## config.json
 
-**Location:** `~/.omnara/config.json`
+**位置：** `~/.omnara/config.json`
 
-**Purpose:** Stores user preferences (non-sensitive settings)
+**用途：** 存储用户偏好（非敏感设置）
 
-**Format:**
+**格式：**
 ```json
 {
   "default_agent": "claude"
 }
 ```
 
-**Permissions:** `0o600` (same as credentials for consistency)
+**权限：** `0o600`（与凭据文件保持一致）
 
-### How It's Created
+### 创建方式
 
-Configuration is saved when you set preferences:
+当你设置偏好时，配置会被保存：
 
 ```bash
-# Set default agent
+# 设置默认智能体
 omnara --set-default codex
 ```
 
-This creates/updates `config.json` with your preference.
+这会创建/更新 `config.json` 中的偏好设置。
 
-### Available Settings
+### 可用设置
 
-Currently supported settings:
+当前支持的设置：
 
 <ParamField path="default_agent" type="string">
-  Default agent to use: `claude`, `codex`, or `amp`
+  要使用的默认智能体：`claude`、`codex` 或 `amp`
 
   ```json
   {
@@ -94,29 +94,29 @@ Currently supported settings:
   ```
 </ParamField>
 
-More settings may be added in future versions.
+未来版本可能会添加更多设置。
 
-### Manual Editing
+### 手动编辑
 
-You can edit config.json directly:
+你可以直接编辑 config.json：
 
 ```bash
 nano ~/.omnara/config.json
 ```
 
-The CLI merges new settings with existing ones, preserving other values.
+CLI 会将新设置与现有设置合并，保留其他值。
 
-## Log Files
+## 日志文件
 
-Agent sessions create log files in subdirectories of `~/.omnara/`:
+智能体会话会在 `~/.omnara/` 的子目录中创建日志文件：
 
-### Location Pattern
+### 位置模式
 
 ```
 ~/.omnara/<agent-type>/<session-id>.log
 ```
 
-### Examples
+### 示例
 
 <CodeGroup>
 
@@ -138,161 +138,161 @@ Agent sessions create log files in subdirectories of `~/.omnara/`:
 
 </CodeGroup>
 
-### Viewing Logs
+### 查看日志
 
 ```bash
-# Find your session ID from dashboard or CLI output
+# 从仪表盘或 CLI 输出中找到你的会话 ID
 export SESSION_ID="abc-123-def-456"
 
-# Tail the log file
+# 跟踪日志文件
 tail -f ~/.omnara/claude_wrapper/$SESSION_ID.log
 
-# Or search for latest
+# 或搜索最新的日志
 ls -t ~/.omnara/claude_wrapper/*.log | head -1 | xargs tail -f
 ```
 
-## File Separation
+## 文件分离
 
 <Tabs>
   <Tab title="credentials.json">
-    **Contains:**
-    - API keys
-    - Authentication tokens
-    - Sensitive secrets
+    **包含：**
+    - API key
+    - 身份验证令牌
+    - 敏感机密信息
 
-    **Why separate:**
-    - Can be excluded from backups
-    - Different access control
-    - Never shared or version controlled
+    **为何分离：**
+    - 可以从备份中排除
+    - 不同的访问控制
+    - 永不共享或纳入版本控制
   </Tab>
 
   <Tab title="config.json">
-    **Contains:**
-    - User preferences
-    - Default settings
-    - Non-sensitive configuration
+    **包含：**
+    - 用户偏好
+    - 默认设置
+    - 非敏感配置
 
-    **Why separate:**
-    - Can be synced across machines
-    - Safe to backup
-    - Can be version controlled (if desired)
+    **为何分离：**
+    - 可以在多台机器之间同步
+    - 可以安全备份
+    - 可以纳入版本控制（如需要）
   </Tab>
 </Tabs>
 
-## Backup and Migration
+## 备份与迁移
 
-### Backup
+### 备份
 
 ```bash
-# Backup configuration directory
+# 备份配置目录
 cp -r ~/.omnara ~/.omnara.backup
 
-# Or just credentials
+# 或仅备份凭据
 cp ~/.omnara/credentials.json ~/.omnara/credentials.json.backup
 ```
 
-### Migration to New Machine
+### 迁移到新机器
 
 ```bash
-# On old machine
+# 在旧机器上
 tar -czf omnara-config.tar.gz ~/.omnara/credentials.json ~/.omnara/config.json
 
-# Transfer file to new machine
+# 将文件传输到新机器
 
-# On new machine
+# 在新机器上
 tar -xzf omnara-config.tar.gz -C ~/
 ```
 
 <Tip>
-Only migrate `credentials.json` and `config.json`. Log files are session-specific and don't need to be transferred.
+只需迁移 `credentials.json` 和 `config.json`。日志文件与具体会话相关，无需传输。
 </Tip>
 
-## Troubleshooting
+## 故障排除
 
-### Corrupted credentials.json
+### credentials.json 损坏
 
-If you see authentication errors:
+如果你看到身份验证错误：
 
 ```bash
-# Check file contents
+# 检查文件内容
 cat ~/.omnara/credentials.json
 
-# Validate JSON syntax
+# 验证 JSON 语法
 python -m json.tool ~/.omnara/credentials.json
 
-# If corrupt, re-authenticate
+# 如果损坏，重新进行身份验证
 omnara --reauth
 ```
 
-### Wrong Permissions
+### 权限错误
 
-If you see permission errors:
+如果你看到权限错误：
 
 ```bash
-# Fix directory permissions
+# 修复目录权限
 chmod 700 ~/.omnara
 
-# Fix file permissions
+# 修复文件权限
 chmod 600 ~/.omnara/credentials.json
 chmod 600 ~/.omnara/config.json
 ```
 
-### Reset Configuration
+### 重置配置
 
-To start fresh:
+如需从头开始：
 
 ```bash
-# Backup first (optional)
+# 先备份（可选）
 mv ~/.omnara ~/.omnara.backup
 
-# Delete configuration
+# 删除配置
 rm -rf ~/.omnara
 
-# Re-authenticate
+# 重新进行身份验证
 omnara --auth
 ```
 
-## Security Best Practices
+## 安全最佳实践
 
 <AccordionGroup>
-  <Accordion title="Never commit credentials" icon="git">
-    Add to your `.gitignore`:
+  <Accordion title="切勿提交凭据" icon="git">
+    添加到你的 `.gitignore`：
     ```
     .omnara/
     **/credentials.json
     ```
   </Accordion>
 
-  <Accordion title="Use environment variables in CI/CD" icon="server">
-    Don't store `credentials.json` in CI/CD systems. Use secrets:
+  <Accordion title="在 CI/CD 中使用环境变量" icon="server">
+    不要在 CI/CD 系统中存储 `credentials.json`。请使用 secrets：
     ```bash
     export OMNARA_API_KEY="${{ secrets.OMNARA_API_KEY }}"
     ```
   </Accordion>
 
-  <Accordion title="Secure backups" icon="shield">
-    If backing up credentials:
+  <Accordion title="安全备份" icon="shield">
+    如果需要备份凭据：
     ```bash
-    # Encrypt before backing up
+    # 备份前先加密
     tar -czf - ~/.omnara | gpg -c > omnara-backup.tar.gz.gpg
     ```
   </Accordion>
 
-  <Accordion title="Rotate keys regularly" icon="rotate">
-    Generate new API keys periodically from the dashboard and update credentials:
+  <Accordion title="定期轮换密钥" icon="rotate">
+    定期从仪表盘生成新的 API key 并更新凭据：
     ```bash
     omnara --reauth
     ```
   </Accordion>
 </AccordionGroup>
 
-## Related Documentation
+## 相关文档
 
 <CardGroup cols={2}>
-  <Card title="Environment Variables" href="/cli/environment-variables">
-    Configure Omnara with environment variables
+  <Card title="环境变量" href="/cli/environment-variables">
+    使用环境变量配置 Omnara
   </Card>
-  <Card title="Authentication" href="/authentication">
-    Learn about authentication methods
+  <Card title="身份验证" href="/authentication">
+    了解身份验证方法
   </Card>
 </CardGroup>

@@ -1,12 +1,12 @@
 ---
-title: Environment Variables
-description: 'Configure Omnara CLI with environment variables'
+title: 环境变量
+description: '使用环境变量配置 Omnara CLI'
 ---
 
-## Authentication
+## 身份验证
 
 <ParamField path="OMNARA_API_KEY" type="string">
-  API key for authentication. Alternative to `--api-key` flag or stored credentials.
+  用于身份验证的 API key。可替代 `--api-key` 标志或已存储的凭据。
 
   ```bash
   export OMNARA_API_KEY="xxxxxxxxxxxxxxxxxxxx"
@@ -14,10 +14,10 @@ description: 'Configure Omnara CLI with environment variables'
   ```
 </ParamField>
 
-## API Configuration
+## API 配置
 
 <ParamField path="OMNARA_API_URL" type="string" default="https://agent.omnara.com">
-  API server URL. Use for self-hosted instances.
+  API 服务器 URL。用于自托管实例。
 
   ```bash
   export OMNARA_API_URL="https://api.mycompany.com"
@@ -26,13 +26,13 @@ description: 'Configure Omnara CLI with environment variables'
 </ParamField>
 
 <ParamField path="OMNARA_BASE_URL" type="string" default="https://agent.omnara.com">
-  Alias for `OMNARA_API_URL`. Both work interchangeably.
+  `OMNARA_API_URL` 的别名。两者可以互换使用。
 </ParamField>
 
-## Session Management
+## 会话管理
 
 <ParamField path="OMNARA_AGENT_INSTANCE_ID" type="string">
-  Pre-existing session ID to resume. Alternative to `--agent-instance-id` flag.
+  要恢复的已有会话 ID。可替代 `--agent-instance-id` 标志。
 
   ```bash
   export OMNARA_AGENT_INSTANCE_ID="abc-123-def-456"
@@ -41,11 +41,11 @@ description: 'Configure Omnara CLI with environment variables'
 </ParamField>
 
 <ParamField path="OMNARA_SESSION_ID" type="string">
-  Alias for `OMNARA_AGENT_INSTANCE_ID`. Used by some integrations.
+  `OMNARA_AGENT_INSTANCE_ID` 的别名。被某些集成使用。
 </ParamField>
 
 <ParamField path="OMNARA_AGENT_DISPLAY_NAME" type="string">
-  Display name for the agent in dashboard. Alternative to `--name` flag.
+  智能体在仪表盘中的显示名称。可替代 `--name` 标志。
 
   ```bash
   export OMNARA_AGENT_DISPLAY_NAME="Code Review Bot"
@@ -54,26 +54,26 @@ description: 'Configure Omnara CLI with environment variables'
 </ParamField>
 
 <ParamField path="OMNARA_AGENT_TYPE" type="string">
-  Default agent type name. Used for tracking in dashboard.
+  默认的智能体类型名称。用于在仪表盘中进行跟踪。
 </ParamField>
 
-## Relay Configuration
+## 中继配置
 
 <ParamField path="OMNARA_RELAY_DISABLED" type="boolean">
-  Disable WebSocket relay streaming. Set to `1` or `true`.
+  禁用 WebSocket 中继流式传输。设置为 `1` 或 `true`。
 
   ```bash
   export OMNARA_RELAY_DISABLED=1
-  omnara  # Runs in local-only mode
+  omnara  # 以仅本地模式运行
   ```
 </ParamField>
 
 <ParamField path="OMNARA_RELAY_URL" type="string">
-  Custom relay WebSocket URL.
+  自定义中继 WebSocket URL。
 
-  **Defaults:**
-  - Production: `wss://relay.omnara.com/agent`
-  - Local dev: `ws://localhost:8080/agent`
+  **默认值：**
+  - 生产环境：`wss://relay.omnara.com/agent`
+  - 本地开发：`ws://localhost:8080/agent`
 
   ```bash
   export OMNARA_RELAY_URL="wss://relay.mycompany.com/agent"
@@ -82,7 +82,7 @@ description: 'Configure Omnara CLI with environment variables'
 </ParamField>
 
 <ParamField path="OMNARA_RELAY_WS_SKIP_VERIFY" type="boolean">
-  Skip SSL verification for relay WebSocket. Use for self-signed certificates.
+  跳过中继 WebSocket 的 SSL 验证。适用于自签名证书。
 
   ```bash
   export OMNARA_RELAY_WS_SKIP_VERIFY=1
@@ -90,10 +90,10 @@ description: 'Configure Omnara CLI with environment variables'
   ```
 </ParamField>
 
-## Agent-Specific
+## 智能体专用
 
 <ParamField path="OMNARA_CODEX_PATH" type="string">
-  Path to Codex binary. Overrides packaged binary.
+  Codex 二进制文件的路径。覆盖随包提供的二进制文件。
 
   ```bash
   export OMNARA_CODEX_PATH="/usr/local/bin/codex"
@@ -101,88 +101,88 @@ description: 'Configure Omnara CLI with environment variables'
   ```
 </ParamField>
 
-## Priority Order
+## 优先级顺序
 
-Environment variables are evaluated in this priority:
+环境变量按以下优先级进行求值：
 
-1. **Command-line flags** (highest priority)
-2. **Environment variables**
-3. **Configuration files** (`~/.omnara/credentials.json`, `~/.omnara/config.json`)
-4. **Defaults**
+1. **命令行标志**（最高优先级）
+2. **环境变量**
+3. **配置文件**（`~/.omnara/credentials.json`、`~/.omnara/config.json`）
+4. **默认值**
 
-### Example Priority
+### 优先级示例
 
 ```bash
-# All three methods set the API key:
-export OMNARA_API_KEY="env_key"           # Priority 2
-# credentials.json contains "file_key"    # Priority 3
-omnara --api-key "flag_key"               # Priority 1 (wins)
+# 三种方式都设置了 API key：
+export OMNARA_API_KEY="env_key"           # 优先级 2
+# credentials.json 中包含 "file_key"      # 优先级 3
+omnara --api-key "flag_key"               # 优先级 1（生效）
 ```
 
-The `flag_key` is used because command-line flags have highest priority.
+最终使用的是 `flag_key`，因为命令行标志具有最高优先级。
 
-## Common Patterns
+## 常见模式
 
-### Development Environment
+### 开发环境
 
 ```bash .env
-# Development environment
+# 开发环境
 export OMNARA_API_URL="http://localhost:8000"
 export OMNARA_RELAY_URL="ws://localhost:8080/agent"
 export OMNARA_RELAY_WS_SKIP_VERIFY=1
 ```
 
-### CI/CD Pipeline
+### CI/CD 流水线
 
 ```bash
-# GitHub Actions, GitLab CI, etc.
+# GitHub Actions、GitLab CI 等
 export OMNARA_API_KEY="${{ secrets.OMNARA_API_KEY }}"
 export OMNARA_AGENT_DISPLAY_NAME="CI Bot - PR #${PR_NUMBER}"
-export OMNARA_RELAY_DISABLED=1  # No terminal streaming needed
+export OMNARA_RELAY_DISABLED=1  # 不需要终端流式传输
 
 omnara headless --permission-mode bypassPermissions --prompt "Fix linting errors"
 ```
 
-### Multi-Agent Setup
+### 多智能体设置
 
 ```bash
-# Terminal 1: Code Review Agent
+# 终端 1：代码审查智能体
 export OMNARA_AGENT_DISPLAY_NAME="Code Reviewer"
 omnara --agent codex
 
-# Terminal 2: Testing Agent
+# 终端 2：测试智能体
 export OMNARA_AGENT_DISPLAY_NAME="Test Runner"
 omnara --agent claude
 ```
 
-### Self-Hosted Instance
+### 自托管实例
 
 ```bash
-# Point to self-hosted Omnara
+# 指向自托管的 Omnara
 export OMNARA_API_URL="https://omnara.mycompany.com"
 export OMNARA_RELAY_URL="wss://relay.mycompany.com/agent"
 omnara
 ```
 
-## Verification
+## 验证
 
-Check which environment variables are set:
+检查已设置的环境变量：
 
 ```bash
-# Check all Omnara env vars
+# 检查所有 Omnara 环境变量
 env | grep OMNARA
 
-# Check specific var
+# 检查特定变量
 echo $OMNARA_API_KEY
 ```
 
-## Related Documentation
+## 相关文档
 
 <CardGroup cols={2}>
-  <Card title="Configuration Files" href="/cli/config-files">
-    Learn about configuration file locations and formats
+  <Card title="配置文件" href="/cli/config-files">
+    了解配置文件的位置和格式
   </Card>
-  <Card title="Authentication" href="/authentication">
-    Set up API keys and authentication
+  <Card title="身份验证" href="/authentication">
+    设置 API key 和身份验证
   </Card>
 </CardGroup>

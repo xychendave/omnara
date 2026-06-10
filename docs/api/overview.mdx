@@ -1,30 +1,30 @@
 ---
-title: API Overview
-description: 'REST API for Omnara agent integration'
+title: API 概览
+description: '用于 Omnara 智能体集成的 REST API'
 ---
 
-## Overview
+## 概览
 
-The Omnara REST API provides programmatic access to all platform features. Use it to build custom agent integrations, dashboards, or automation workflows.
+Omnara REST API 提供对平台所有功能的编程访问。你可以用它来构建自定义智能体集成、仪表板或自动化工作流。
 
-**Base URL:** `https://agent.omnara.com/api/v1`
+**基础 URL：** `https://agent.omnara.com/api/v1`
 
-## Authentication
+## 认证
 
-All API requests require authentication via Bearer token:
+所有 API 请求都需要通过 Bearer 令牌进行认证：
 
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
   https://agent.omnara.com/api/v1/messages/agent
 ```
 
-<Card title="Get Your API Key" icon="key" href="/authentication">
-  Learn how to obtain and manage API keys
+<Card title="获取你的 API key" icon="key" href="/authentication">
+  了解如何获取和管理 API key
 </Card>
 
-## Quick Start
+## 快速开始
 
-Send a message from your agent:
+从你的智能体发送一条消息：
 
 ```bash
 curl -X POST https://agent.omnara.com/api/v1/messages/agent \
@@ -37,7 +37,7 @@ curl -X POST https://agent.omnara.com/api/v1/messages/agent \
   }'
 ```
 
-Response:
+响应：
 
 ```json
 {
@@ -48,37 +48,37 @@ Response:
 }
 ```
 
-## Core Endpoints
+## 核心端点
 
 <CardGroup cols={2}>
-  <Card title="Send Message" icon="paper-plane">
+  <Card title="发送消息" icon="paper-plane">
     **POST** `/messages/agent`
 
-    Send status updates or ask questions
+    发送状态更新或提出问题
   </Card>
 
-  <Card title="Get Pending Messages" icon="inbox">
+  <Card title="获取待处理消息" icon="inbox">
     **GET** `/messages/pending`
 
-    Retrieve user responses
+    获取用户的回复
   </Card>
 
-  <Card title="End Session" icon="circle-stop">
+  <Card title="结束会话" icon="circle-stop">
     **POST** `/sessions/end`
 
-    Mark agent session as complete
+    将智能体会话标记为已完成
   </Card>
 
-  <Card title="Verify Auth" icon="shield-check">
+  <Card title="验证认证" icon="shield-check">
     **GET** `/auth/verify`
 
-    Validate API key
+    校验 API key 的有效性
   </Card>
 </CardGroup>
 
 ## Python SDK
 
-For Python applications, use the official SDK:
+对于 Python 应用，请使用官方 SDK：
 
 ```bash
 pip install omnara
@@ -91,7 +91,7 @@ import uuid
 client = OmnaraClient(api_key="your-api-key")
 instance_id = str(uuid.uuid4())
 
-# Send a message
+# 发送一条消息
 response = client.send_message(
     agent_type="My Agent",
     content="Processing data...",
@@ -99,7 +99,7 @@ response = client.send_message(
     requires_user_input=False
 )
 
-# Ask a question
+# 提出一个问题
 answer = client.send_message(
     content="Should I proceed with deployment?",
     agent_instance_id=instance_id,
@@ -108,21 +108,21 @@ answer = client.send_message(
 print(f"User said: {answer}")
 ```
 
-<Card title="Python SDK Documentation" icon="python" href="/api/sdk">
-  Complete SDK reference and examples
+<Card title="Python SDK 文档" icon="python" href="/api/sdk">
+  完整的 SDK 参考和示例
 </Card>
 
-## Rate Limits
+## 速率限制
 
-Current rate limits (subject to change):
+当前的速率限制（可能会调整）：
 
-| Tier | Requests/minute | Requests/hour |
+| 级别 | 每分钟请求数 | 每小时请求数 |
 |------|----------------|---------------|
-| Free | 60 | 1,000 |
-| Pro | 300 | 10,000 |
-| Enterprise | Custom | Custom |
+| 免费版 | 60 | 1,000 |
+| 专业版 | 300 | 10,000 |
+| 企业版 | 自定义 | 自定义 |
 
-Rate limit headers are included in responses:
+响应中会包含速率限制相关的响应头：
 
 ```
 X-RateLimit-Limit: 60
@@ -130,21 +130,21 @@ X-RateLimit-Remaining: 45
 X-RateLimit-Reset: 1640000000
 ```
 
-## Error Handling
+## 错误处理
 
-The API uses standard HTTP status codes:
+API 使用标准 HTTP 状态码：
 
-| Code | Meaning |
+| 状态码 | 含义 |
 |------|---------|
-| 200 | Success |
-| 400 | Bad Request - Invalid parameters |
-| 401 | Unauthorized - Invalid or missing API key |
-| 403 | Forbidden - Insufficient permissions |
-| 404 | Not Found - Resource doesn't exist |
-| 429 | Too Many Requests - Rate limit exceeded |
-| 500 | Internal Server Error |
+| 200 | 成功 |
+| 400 | 错误请求——参数无效 |
+| 401 | 未授权——API key 无效或缺失 |
+| 403 | 禁止访问——权限不足 |
+| 404 | 未找到——资源不存在 |
+| 429 | 请求过多——超出速率限制 |
+| 500 | 服务器内部错误 |
 
-Error response format:
+错误响应格式：
 
 ```json
 {
@@ -158,12 +158,12 @@ Error response format:
 }
 ```
 
-## Webhooks
+## Webhook
 
-Configure webhooks to receive real-time notifications when users respond:
+配置 webhook，以便在用户回复时接收实时通知：
 
-1. Set up webhook URL in dashboard
-2. Include webhook URL in message metadata:
+1. 在仪表板中设置 webhook URL
+2. 在消息元数据中包含 webhook URL：
 
 ```json
 {
@@ -177,7 +177,7 @@ Configure webhooks to receive real-time notifications when users respond:
 }
 ```
 
-3. Receive POST request when user responds:
+3. 用户回复时接收 POST 请求：
 
 ```json
 {
@@ -189,15 +189,15 @@ Configure webhooks to receive real-time notifications when users respond:
 }
 ```
 
-## Self-Hosted Instances
+## 自托管实例
 
-Point to your own Omnara instance:
+指向你自己的 Omnara 实例：
 
 ```bash
 export OMNARA_API_URL="https://omnara.mycompany.com"
 ```
 
-Or in API calls:
+或在 API 调用中指定：
 
 ```python
 client = OmnaraClient(
@@ -206,19 +206,19 @@ client = OmnaraClient(
 )
 ```
 
-## Next Steps
+## 后续步骤
 
 <CardGroup cols={2}>
-  <Card title="Authentication" href="/api/authentication">
-    API key management and security
+  <Card title="认证" href="/api/authentication">
+    API key 管理与安全
   </Card>
   <Card title="Python SDK" href="/api/sdk">
-    Official Python SDK documentation
+    官方 Python SDK 文档
   </Card>
-  <Card title="CLI Reference" href="/cli/overview">
-    Use CLI for quick testing
+  <Card title="CLI 参考" href="/cli/overview">
+    使用 CLI 进行快速测试
   </Card>
-  <Card title="Integrations" href="/integrations/n8n">
-    Pre-built integrations
+  <Card title="集成" href="/integrations/n8n">
+    预构建的集成
   </Card>
 </CardGroup>
